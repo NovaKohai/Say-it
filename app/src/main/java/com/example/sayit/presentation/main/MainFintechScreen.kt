@@ -854,7 +854,8 @@ private fun DashboardTabContent(
                             text = periodTitle,
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp
+                                fontSize = 13.sp,
+                                letterSpacing = 0.sp
                             ),
                             color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                         )

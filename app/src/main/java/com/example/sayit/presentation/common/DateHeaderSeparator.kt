@@ -43,7 +43,8 @@ fun DateHeaderSeparator(
                 text = title,
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontSize = 14.5.sp,
+                    letterSpacing = 0.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -54,13 +55,14 @@ fun DateHeaderSeparator(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                    .padding(horizontal = 7.dp, vertical = 2.5.dp)
             ) {
                 Text(
                     text = "$txCount ${if (txCount == 1) strings.transactionSingle else strings.transactionPlural}",
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -76,7 +78,8 @@ fun DateHeaderSeparator(
                     text = "+${totalIncome.toInt()} ${strings.currency}",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        fontSize = 12.5.sp,
+                        letterSpacing = 0.sp
                     ),
                     color = Emerald500
                 )
@@ -87,7 +90,8 @@ fun DateHeaderSeparator(
                     text = "-${totalExpense.toInt()} ${strings.currency}",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        fontSize = 12.5.sp,
+                        letterSpacing = 0.sp
                     ),
                     color = RedExpense
                 )

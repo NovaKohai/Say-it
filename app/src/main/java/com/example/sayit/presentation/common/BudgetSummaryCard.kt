@@ -114,24 +114,25 @@ fun BudgetSummaryCard(
                     ) {
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(Emerald500.copy(alpha = 0.15f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .size(6.dp)
+                                        .size(7.dp)
                                         .clip(CircleShape)
                                         .background(Emerald300)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text(
                                     text = strings.monthlyBudget,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 11.sp
+                                        fontSize = 13.sp,
+                                        letterSpacing = 0.sp
                                     ),
                                     color = Emerald300
                                 )
@@ -223,24 +224,25 @@ Icon(
                         // Eyebrow Chip
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(Emerald500.copy(alpha = 0.15f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .size(6.dp)
+                                        .size(7.dp)
                                         .clip(CircleShape)
                                         .background(Emerald300)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text(
                                     text = strings.smartRemainingBudget,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 11.sp
+                                        fontSize = 13.sp,
+                                        letterSpacing = 0.sp
                                     ),
                                     color = Emerald300
                                 )
@@ -349,7 +351,7 @@ Icon(
                                 Column {
                                     Text(
                                         text = strings.dailyBurnRate,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                         color = Color.White.copy(alpha = 0.5f)
                                     )
                                     Text(
@@ -381,7 +383,7 @@ Icon(
                                 Column {
                                     Text(
                                         text = strings.depletionDate,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                         color = Color.White.copy(alpha = 0.5f)
                                     )
                                     val depletionStr = if (strings.currency == "EGP") forecast.depletionDateEn else forecast.depletionDateAr

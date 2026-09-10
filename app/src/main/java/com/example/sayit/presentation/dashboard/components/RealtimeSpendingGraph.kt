@@ -200,8 +200,8 @@ fun RealtimeSpendingGraph(
                             text = if (isEn) "LIVE" else "تحديث لحظي",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
-                                fontSize = 10.sp,
-                                letterSpacing = 0.5.sp
+                                fontSize = 11.5.sp,
+                                letterSpacing = 0.sp
                             ),
                             color = Emerald500
                         )
@@ -225,14 +225,18 @@ fun RealtimeSpendingGraph(
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
                         text = if (isEn) "Total Spent" else "إجمالي المنفق",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 12.5.sp,
+                            letterSpacing = 0.sp
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "${totalSpent.toInt()} $currency",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 15.sp,
+                            letterSpacing = 0.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -250,14 +254,18 @@ fun RealtimeSpendingGraph(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = if (isEn) "Daily Avg" else "متوسط اليوم",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 12.5.sp,
+                            letterSpacing = 0.sp
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "${avgSpent.toInt()} $currency",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 15.sp,
+                            letterSpacing = 0.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -275,14 +283,18 @@ fun RealtimeSpendingGraph(
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = if (isEn) "Peak Day" else "أعلى يوم",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 12.5.sp,
+                            letterSpacing = 0.sp
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "${(maxSpentPoint?.amount ?: 0.0).toInt()} $currency",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 15.sp,
+                            letterSpacing = 0.sp
                         ),
                         color = Emerald500
                     )
@@ -490,8 +502,9 @@ fun RealtimeSpendingGraph(
                         Text(
                             text = point.dayLabel,
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
-                                fontWeight = if (idx == selectedIndex) FontWeight.Bold else FontWeight.Medium
+                                fontSize = 11.5.sp,
+                                fontWeight = if (idx == selectedIndex) FontWeight.Bold else FontWeight.Medium,
+                                letterSpacing = 0.sp
                             ),
                             color = if (idx == selectedIndex) Emerald500 else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center

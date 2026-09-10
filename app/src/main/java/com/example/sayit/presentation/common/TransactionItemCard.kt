@@ -140,8 +140,8 @@ fun TransactionItemCard(
                     text = transaction.merchant,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
-                        letterSpacing = (-0.2).sp
+                        fontSize = 16.sp,
+                        letterSpacing = 0.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
@@ -155,7 +155,7 @@ fun TransactionItemCard(
                 ) {
                     Text(
                         text = formattedDate,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
@@ -164,13 +164,14 @@ fun TransactionItemCard(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
                             .background(sourceBgColor)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 7.dp, vertical = 2.5.dp)
                     ) {
                         Text(
                             text = sourceLabel,
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.sp
                             ),
                             color = sourceTextColor
                         )
@@ -184,8 +185,8 @@ fun TransactionItemCard(
                     text = "$amountPrefix${transaction.amount.toInt()} ${strings.currency}",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Black,
-                        fontSize = 16.sp,
-                        letterSpacing = (-0.3).sp
+                        fontSize = 16.5.sp,
+                        letterSpacing = 0.sp
                     ),
                     color = amountColor
                 )
@@ -193,7 +194,7 @@ fun TransactionItemCard(
                 Text(
                     text = if (isEn) (transaction.category?.nameEn ?: "General") else (transaction.category?.nameAr ?: "عام"),
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 11.sp,
+                        fontSize = 12.5.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                     )
                 )
