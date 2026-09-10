@@ -1,0 +1,126 @@
+package com.example.sayit.core.localization
+
+val EnglishStrings = AppStrings(
+    // TopBar & Header
+    appName = "Say It",
+    localOfflineBadge = "100% Local & Offline",
+    morningGreeting = "Good morning",
+    eveningGreeting = "Good evening",
+    dashboardSubtitle = "Smart real-time view of your finances & savings",
+    shareReport = "Share Report",
+    exportCsv = "Export CSV",
+    languageToggle = "العربية",
+
+    // Navigation Tabs
+    tabDashboard = "Dashboard",
+    tabAnalytics = "Analytics",
+    tabInstallments = "Installments",
+    tabAiCopilot = "Assistant",
+    tabSqlDb = "SQLite DB",
+    tabSettings = "Banks & Sync",
+
+    // Actions & Common
+    addManual = "Add Manual",
+    voiceRecord = "Voice Record",
+    edit = "Edit",
+    delete = "Delete",
+    close = "Close",
+    cancel = "Cancel",
+    save = "Save",
+    saveChanges = "Save Changes",
+    confirm = "Confirm",
+    apply = "Apply",
+    currency = "EGP",
+    perDay = "EGP/day",
+    all = "All",
+
+    // Budget Summary Card
+    monthlyBudget = "Monthly Budget",
+    smartRemainingBudget = "Smart Remaining Budget",
+    remainingCurrency = "EGP remaining",
+    dailyBurnRate = "Daily Burn",
+    depletionDate = "Depletion Date",
+    spent = "Spent:",
+    budgetCap = "Cap:",
+    startSetBudget = "Start by setting your monthly budget",
+    startSetBudgetDesc = "Set your spending ceiling to calculate daily burn rate and forecast your runaway runway",
+    setBudgetNow = "Set Budget Now",
+    totalSpentLabel = "Total Recorded Expenses:",
+
+    // Cashflow Row
+    income = "Income",
+    expenses = "Expenses",
+    netSavings = "Net Savings",
+    totalInflow = "Total Inflow",
+    totalOutflow = "Total Outflow",
+    savings = "Saved",
+    savingsRate = "Saved",
+
+    // Time Periods
+    periodThisMonth = "This Month",
+    periodLastMonth = "Last Month",
+    periodLast30Days = "Last 30 Days",
+    periodAllTime = "All Time",
+
+    // Transactions List & Empty State
+    searchPlaceholder = "Search transactions or merchants...",
+    transactionsHistory = "Transaction History",
+    noTransactions = "No transactions in this period",
+    noTransactionsDesc = "Log your first transaction via voice or manual entry, or adjust the time period filter.",
+    today = "Today",
+    yesterday = "Yesterday",
+    transactionSingle = "transaction",
+    transactionPlural = "transactions",
+
+    // Transaction Details & Dialogs
+    transactionDetails = "Transaction Details",
+    editTransaction = "Edit Transaction",
+    addTransactionTitle = "Add Manual Transaction",
+    expenseType = "Expense (-)",
+    incomeType = "Income (+)",
+    amountLabel = "Amount (EGP)",
+    amountPlaceholder = "e.g.: 150",
+    merchantLabel = "Merchant or Description",
+    merchantPlaceholder = "e.g.: Carrefour, Fuel, Coffee...",
+    notesLabel = "Additional notes (optional)",
+    categoryLabel = "Category:",
+    paymentMethodLabel = "Payment Method:",
+    sourceLabel = "Recording Source",
+    dateTimeLabel = "Date & Time",
+    rawTextLabel = "Captured Raw Text:",
+
+    // Analytics Screen
+    runwayTitle = "Financial Spending Runway",
+    runwaySubtitle = "Estimated monthly budget depletion timeline",
+    zeroBudgetNotice = "No monthly budget set yet. Configure your budget under 'Banks & Sync' to activate burn rate tracking and forecast warnings.",
+    overBudget = "Over Budget",
+    fullBudget = "Budget Untouched",
+    budgetConsumed = "consumed",
+    projectedMonthTotal = "Projected Month-End",
+    spendingByCategory = "Spending by Category",
+    noExpensesForCategories = "No expenses recorded yet for category breakdown",
+    topMerchants = "Top Spending Places",
+    noMerchantsYet = "No transactions recorded yet to display merchants",
+
+    // Settings & Bank Hub
+    monthlyBudgetHeading = "Monthly Budget",
+    budgetHeadingDesc = "Define spending threshold to calculate financial runway",
+    notSpecified = "Not Set",
+    customBudgetLabel = "Custom Budget (EGP)",
+    customBudgetPlaceholder = "Enter your monthly budget",
+    smsSyncTitle = "Sync Past Bank SMS from Device",
+    smsSyncDesc = "Scan past bank messages in your inbox, select how many to import, and automatically skip duplicate transactions.",
+    smsSyncButton = "Scan & Import Past Bank SMS",
+    permissionsTitle = "Automatic Android Tracking Permissions",
+    smsPermissionTitle = "Read Bank SMS",
+    smsPermissionDesc = "Capture NBE, CIB, Banque Misr, and wallet SMS automatically without manual logging.",
+    notifPermissionTitle = "InstaPay Notification Access",
+    notifPermissionDesc = "Record instant InstaPay and wallet payments in real-time.",
+    openNotifSettings = "Open System Notification Access Settings",
+    devOptionsTitle = "Developer & Database Options (PIN)",
+    devOptionsDesc = "SQLite database explorer and raw queries protected by PIN",
+    devModeActive = "Developer Mode Active",
+    lockDevMode = "Lock Developer Mode",
+    languageTitle = "App Language",
+    languageDesc = "Choose your preferred interface language"
+)

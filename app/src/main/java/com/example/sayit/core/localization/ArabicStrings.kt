@@ -1,0 +1,126 @@
+package com.example.sayit.core.localization
+
+val ArabicStrings = AppStrings(
+    // TopBar & Header
+    appName = "Say It",
+    localOfflineBadge = "محلي 100% بدون نت",
+    morningGreeting = "صباح الخير",
+    eveningGreeting = "مساء الخير",
+    dashboardSubtitle = "نظرة مالية ذكية ومباشرة لمصاريفك ومدخراتك",
+    shareReport = "مشاركة التقرير",
+    exportCsv = "تصدير CSV",
+    languageToggle = "English",
+
+    // Navigation Tabs
+    tabDashboard = "الرئيسية",
+    tabAnalytics = "التحليلات",
+    tabInstallments = "الأقساط",
+    tabAiCopilot = "المساعد",
+    tabSqlDb = "قاعدة SQLite",
+    tabSettings = "البنوك والمزامنة",
+
+    // Actions & Common
+    addManual = "إضافة يدوية",
+    voiceRecord = "تسجيل صوتي",
+    edit = "تعديل",
+    delete = "حذف",
+    close = "إغلاق",
+    cancel = "إلغاء",
+    save = "حفظ",
+    saveChanges = "حفظ التعديلات",
+    confirm = "تأكيد",
+    apply = "تطبيق",
+    currency = "ج.م",
+    perDay = "ج.م/يوم",
+    all = "الكل",
+
+    // Budget Summary Card
+    monthlyBudget = "الميزانية الشهرية",
+    smartRemainingBudget = "الميزانية الذكية المتبقية",
+    remainingCurrency = "ج.م متبقي",
+    dailyBurnRate = "الحرق اليومي",
+    depletionDate = "تاريخ النفاد",
+    spent = "تم صرف:",
+    budgetCap = "السقف:",
+    startSetBudget = "ابدأ بتحديد ميزانيتك الشهرية",
+    startSetBudgetDesc = "حدد سقف مصاريفك لحساب معدل الحرق اليومي وتوقع تاريخ نفاد الرصيد بدقة ذكية",
+    setBudgetNow = "تحديد الميزانية الآن",
+    totalSpentLabel = "إجمالي المصروفات المسجلة:",
+
+    // Cashflow Row
+    income = "الدخل",
+    expenses = "المصروفات",
+    netSavings = "صافي الوفر",
+    totalInflow = "إجمالي الوارد",
+    totalOutflow = "إجمالي المنفق",
+    savings = "توفير",
+    savingsRate = "ادخار",
+
+    // Time Periods
+    periodThisMonth = "هذا الشهر",
+    periodLastMonth = "الشهر السابق",
+    periodLast30Days = "آخر 30 يوم",
+    periodAllTime = "الكل",
+
+    // Transactions List & Empty State
+    searchPlaceholder = "بحث في المعاملات أو المتاجر...",
+    transactionsHistory = "سجل المعاملات",
+    noTransactions = "لا توجد معاملات في هذه الفترة",
+    noTransactionsDesc = "سجل أول مصروف بالصوت أو يدوياً، أو غيّر الفترة الزمنية لعرض معاملات سابقة.",
+    today = "اليوم",
+    yesterday = "أمس",
+    transactionSingle = "معاملة",
+    transactionPlural = "معاملات",
+
+    // Transaction Details & Dialogs
+    transactionDetails = "تفاصيل المعاملة",
+    editTransaction = "تعديل المعاملة",
+    addTransactionTitle = "إضافة معاملة يدوية",
+    expenseType = "مصروف (-)",
+    incomeType = "دخل (+)",
+    amountLabel = "المبلغ (ج.م)",
+    amountPlaceholder = "مثلاً: 150",
+    merchantLabel = "اسم المتجر أو الوصف",
+    merchantPlaceholder = "مثلاً: كارفور، بنزين، كشري...",
+    notesLabel = "ملاحظات إضافية (اختياري)",
+    categoryLabel = "الفئة التصنيفية:",
+    paymentMethodLabel = "طريقة الدفع:",
+    sourceLabel = "مصدر التسجيل",
+    dateTimeLabel = "تاريخ ووقت المعاملة",
+    rawTextLabel = "النص الأصلي الملتقط:",
+
+    // Analytics Screen
+    runwayTitle = "مدرج الصرف المالي",
+    runwaySubtitle = "توقع سرعة نفاد الميزانية الشهرية",
+    zeroBudgetNotice = "لم تحدد ميزانية شهرية بعد. حدد ميزانيتك الشهرية من تبويب 'البنوك والمزامنة' لحساب معدل الحرق وتوقع تاريخ نفاد الرصيد تلقائياً.",
+    overBudget = "تجاوزت الميزانية",
+    fullBudget = "الميزانية كاملة",
+    budgetConsumed = "مستهلك",
+    projectedMonthTotal = "التوقع نهاية الشهر",
+    spendingByCategory = "توزيع المصاريف حسب الفئات",
+    noExpensesForCategories = "لا توجد مصاريف مسجلة حتى الآن لتحليل الفئات",
+    topMerchants = "أكثر الأماكن إنفاقاً",
+    noMerchantsYet = "لا توجد معاملات مسجلة بعد لعرض المتاجر",
+
+    // Settings & Bank Hub
+    monthlyBudgetHeading = "الميزانية الشهرية",
+    budgetHeadingDesc = "تحديد السقف المالي لحساب مدرج الصرف",
+    notSpecified = "غير محددة",
+    customBudgetLabel = "ميزانية مخصصة (ج.م)",
+    customBudgetPlaceholder = "أدخل ميزانيتك الشهرية",
+    smsSyncTitle = "مزامنة الرسائل السابقة من الهاتف",
+    smsSyncDesc = "فحص رسائل البنوك السابقة في صندوق الوارد بهاتفك وتحديد عدد الرسائل التي تريد فحصها وتخطي المعاملات المكررة تلقائياً.",
+    smsSyncButton = "فحص واستيراد رسائل الهاتف السابقة",
+    permissionsTitle = "صلاحيات التتبع التلقائي في أندرويد",
+    smsPermissionTitle = "قراءة رسائل البنوك (SMS)",
+    smsPermissionDesc = "لالتقاط رسائل NBE، CIB، بنك مصر، والمحافظ تلقائياً دون لمس الهاتف.",
+    notifPermissionTitle = "التقاط إشعارات إنستاباي (Notification Access)",
+    notifPermissionDesc = "لتسجيل تحويلات إنستاباي الفورية أولاً بأول.",
+    openNotifSettings = "فتح إعدادات صلاحية الإشعارات للهاتف",
+    devOptionsTitle = "خيارات المطور وقاعدة البيانات (PIN)",
+    devOptionsDesc = "مستكشف SQLite واستعلامات SQL محمية برقم سري",
+    devModeActive = "وضع المطور نشط (Developer Mode)",
+    lockDevMode = "قفل وضع المطور",
+    languageTitle = "لغة التطبيق",
+    languageDesc = "اختر اللغة المفضلة لواجهة التطبيق"
+)
