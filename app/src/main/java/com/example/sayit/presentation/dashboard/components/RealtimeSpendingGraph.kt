@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -194,7 +195,8 @@ fun RealtimeSpendingGraph(
                             modifier = Modifier
                                 .size(7.dp)
                                 .clip(CircleShape)
-                                .background(Emerald500.copy(alpha = pulseAlpha))
+                                .graphicsLayer { alpha = pulseAlpha }
+                                .background(Emerald500)
                         )
                         Text(
                             text = if (isEn) "LIVE" else "تحديث لحظي",
@@ -329,6 +331,7 @@ fun RealtimeSpendingGraph(
             val maxAmount = remember(spendingPoints) {
                 (spendingPoints.maxOfOrNull { it.amount } ?: 100.0).coerceAtLeast(100.0) * 1.15
             }
+            val dashEffect = remember { PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f) }
 
             Box(
                 modifier = Modifier
@@ -367,7 +370,6 @@ fun RealtimeSpendingGraph(
 
                     // Draw 3 subtle horizontal guide lines
                     val steps = 3
-                    val dashEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                     for (i in 1..steps) {
                         val y = height * (i.toFloat() / (steps + 1))
                         drawLine(
