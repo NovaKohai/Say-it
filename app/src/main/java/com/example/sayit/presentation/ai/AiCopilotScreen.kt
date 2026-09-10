@@ -71,9 +71,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
 import com.example.sayit.core.localization.LocalStrings
 import com.example.sayit.domain.model.AiAction
 import com.example.sayit.domain.model.AiMessage
@@ -694,8 +698,12 @@ fun ChatMessageBubble(
                     if (isArabic) "معلش يا بطل، حصل تعليق لحظي في الرد. اسألني تاني كده؟" else "Brief hiccup in response. Could you please ask again?"
                 } else message.text
 
+                val formattedText = remember(displayText) {
+                    parseMarkdownToAnnotatedString(displayText)
+                }
+
                 Text(
-                    text = displayText,
+                    text = formattedText,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         lineHeight = 24.sp,
                         fontSize = 15.sp,
@@ -911,3 +919,24 @@ fun ThinkingIndicatorBubble(isArabic: Boolean) {
         }
     }
 }
+
+/**
+ * Parses markdown bold (**text**) into Compose AnnotatedString with FontWeight.Bold.
+ * Eliminates raw asterisk characters from LLM responses while preserving rich text formatting.
+ */
+fun parseMarkdownToAnnotatedString(content: String): AnnotatedString {
+    return buildAnnotatedString {
+        val parts = content.split("**")
+        for (i in parts.indices) {
+            if (i % 2 == 1) {
+                // Inside **bold**
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append(parts[i])
+                pop()
+            } else {
+                append(parts[i])
+            }
+        }
+    }
+}
+
