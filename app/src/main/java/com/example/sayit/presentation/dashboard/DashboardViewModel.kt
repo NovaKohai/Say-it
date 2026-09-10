@@ -320,6 +320,19 @@ class DashboardViewModel(
         }
     }
 
+    fun quickLogExpense(amount: Double, merchant: String, categoryId: String) {
+        val newTx = Transaction(
+            id = java.util.UUID.randomUUID().toString(),
+            amount = amount,
+            merchant = merchant,
+            type = TransactionType.EXPENSE,
+            categoryId = categoryId,
+            timestamp = System.currentTimeMillis(),
+            notes = "Quick Log"
+        )
+        saveTransaction(newTx)
+    }
+
     fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch {
             transactionRepository.updateTransaction(transaction)

@@ -10,7 +10,8 @@ data class SpendingForecast(
     val estimatedRunwayDayOfMonth: Int?, // Day of month when budget is projected to hit zero
     val isOverBudget: Boolean,
     val warningTipAr: String,
-    val warningTipEn: String
+    val warningTipEn: String,
+    val healthScore: Int = 80
 ) {
     val projectedMonthTotal: Double get() = projectedMonthEndTotal
     val depletionDateAr: String

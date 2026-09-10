@@ -51,6 +51,19 @@ class CalculateRunwayUseCase {
             runwayDay = estimatedRunwayDay
         )
 
+        val healthScore: Int = if (monthlyBudget <= 0) {
+            75
+        } else if (isOverBudget) {
+            val overRatio = (totalSpent - monthlyBudget) / monthlyBudget
+            (35 - (overRatio * 50).toInt()).coerceIn(5, 35)
+        } else {
+            val daysInMonthSafe = daysInMonth.coerceAtLeast(1)
+            val expectedSpentRatio = daysPassed.toDouble() / daysInMonthSafe
+            val actualSpentRatio = totalSpent / monthlyBudget
+            val delta = expectedSpentRatio - actualSpentRatio
+            (70 + (delta * 60).toInt()).coerceIn(35, 100)
+        }
+
         return SpendingForecast(
             monthlyBudget = monthlyBudget,
             totalSpent = totalSpent,
@@ -61,7 +74,8 @@ class CalculateRunwayUseCase {
             estimatedRunwayDayOfMonth = estimatedRunwayDay,
             isOverBudget = isOverBudget,
             warningTipAr = warningAr,
-            warningTipEn = warningEn
+            warningTipEn = warningEn,
+            healthScore = healthScore
         )
     }
 

@@ -249,21 +249,54 @@ Icon(
                             }
                         }
 
-                        // Edit Button with tactile Emil press feedback
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f))
-                                .pressScale(targetScale = 0.90f, onClick = onEditBudgetClick),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = strings.edit,
-                                tint = Color.White.copy(alpha = 0.8f),
-                                modifier = Modifier.size(16.dp)
-                            )
+                            // Financial Health Score Pill
+                            val score = forecast.healthScore
+                            val scoreColor = when {
+                                score >= 80 -> Emerald300
+                                score >= 60 -> CyanAccent
+                                else -> RedExpense
+                            }
+                            val isEn = strings.currency == "EGP"
+                            val scoreLabel = if (isEn) "Score: $score/100" else "$score/100 صحة مالية"
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(scoreColor.copy(alpha = 0.12f))
+                                    .border(1.dp, scoreColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                            ) {
+                                Text(
+                                    text = scoreLabel,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        letterSpacing = 0.sp
+                                    ),
+                                    color = scoreColor
+                                )
+                            }
+
+                            // Edit Button with tactile Emil press feedback
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                                    .pressScale(targetScale = 0.90f, onClick = onEditBudgetClick),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = strings.edit,
+                                    tint = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
 

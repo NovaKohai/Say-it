@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -809,6 +810,18 @@ private fun DashboardTabContent(
             )
         }
 
+        // 3a. Quick 1-Tap Expense Presets (Frictionless Rapid Logging)
+        item {
+            QuickPresetsRow(
+                isArabic = uiState.language == AppLanguage.AR,
+                currency = strings.currency,
+                onPresetClick = { amount, merchant, catId ->
+                    viewModel.quickLogExpense(amount, merchant, catId)
+                },
+                onCustomAddClick = { viewModel.setManualAddDialogOpen(true) }
+            )
+        }
+
         // 3b. Realtime Spending Flow Curve Graph
         item {
             RealtimeSpendingGraph(
@@ -1243,3 +1256,111 @@ private fun InstallmentsDashboardCard(
         }
     }
 }
+
+@Composable
+fun QuickPresetsRow(
+    isArabic: Boolean,
+    currency: String,
+    onPresetClick: (amount: Double, merchant: String, catId: String) -> Unit,
+    onCustomAddClick: () -> Unit
+) {
+    val presets = remember(isArabic) {
+        if (isArabic) {
+            listOf(
+                Triple("☕ قهوة", 40.0, "cat_food"),
+                Triple("🚗 مواصلات", 25.0, "cat_transport"),
+                Triple("🛒 بقالة", 100.0, "cat_groceries"),
+                Triple("🍽️ غداء", 150.0, "cat_food")
+            )
+        } else {
+            listOf(
+                Triple("☕ Coffee", 40.0, "cat_food"),
+                Triple("🚗 Transit", 25.0, "cat_transport"),
+                Triple("🛒 Groceries", 100.0, "cat_groceries"),
+                Triple("🍽️ Lunch", 150.0, "cat_food")
+            )
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (isArabic) "تسجيل سريع بنقرة واحدة ⚡" else "Quick 1-Tap Log ⚡",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.5.sp,
+                    letterSpacing = 0.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = if (isArabic) "مخصص +" else "Custom +",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    letterSpacing = 0.sp
+                ),
+                color = Emerald500,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable(onClick = onCustomAddClick)
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(presets) { preset ->
+                val (title, amount, catId) = preset
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                        .pressScale(0.94f, onClick = { onPresetClick(amount, title.substringAfter(" "), catId) })
+                        .padding(horizontal = 11.dp, vertical = 7.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.5.sp,
+                                letterSpacing = 0.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Emerald500.copy(alpha = 0.15f))
+                                .padding(horizontal = 5.dp, vertical = 1.5.dp)
+                        ) {
+                            Text(
+                                text = "${amount.toInt()}",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    letterSpacing = 0.sp
+                                ),
+                                color = Emerald500
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
