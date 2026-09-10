@@ -31,10 +31,15 @@ import com.example.sayit.theme.SayItTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import com.example.sayit.core.localization.AppLanguage
 import com.example.sayit.core.localization.ArabicStrings
 import com.example.sayit.core.localization.EnglishStrings
 import com.example.sayit.core.localization.LocalStrings
+import com.example.sayit.presentation.splash.SplashScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -71,24 +76,38 @@ class MainActivity : ComponentActivity() {
             ) {
                 SayItTheme(darkTheme = uiState.isDarkMode) {
                     var showDisclosure by remember { mutableStateOf(!alreadyAccepted) }
+                    var showSplash by remember { mutableStateOf(true) }
 
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        MainFintechScreen(viewModel = viewModel)
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            MainFintechScreen(viewModel = viewModel)
 
-                        if (showDisclosure) {
-                            PrivacyDisclosureDialog(
-                                onAccept = {
-                                    prefs.isPrivacyDisclosureAccepted = true
-                                    showDisclosure = false
-                                    requestAppPermissions()
-                                },
-                                onDecline = {
-                                    showDisclosure = false
-                                }
-                            )
+                            if (showDisclosure && !showSplash) {
+                                PrivacyDisclosureDialog(
+                                    onAccept = {
+                                        prefs.isPrivacyDisclosureAccepted = true
+                                        showDisclosure = false
+                                        requestAppPermissions()
+                                    },
+                                    onDecline = {
+                                        showDisclosure = false
+                                    }
+                                )
+                            }
+
+                            AnimatedVisibility(
+                                visible = showSplash,
+                                enter = androidx.compose.animation.fadeIn(),
+                                exit = fadeOut(animationSpec = tween(durationMillis = 400))
+                            ) {
+                                SplashScreen(
+                                    isArabic = uiState.language == AppLanguage.AR,
+                                    onSplashFinished = { showSplash = false }
+                                )
+                            }
                         }
                     }
                 }
