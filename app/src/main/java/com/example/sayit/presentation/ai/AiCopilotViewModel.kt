@@ -334,4 +334,11 @@ class AiCopilotViewModel(
             }
         }
     }
+
+    fun clearChat(isArabic: Boolean) {
+        viewModelScope.launch {
+            val greeting = askCopilotUseCase.getInitialGreeting(isArabic)
+            _uiState.update { it.copy(messages = listOf(greeting), inputText = "") }
+        }
+    }
 }

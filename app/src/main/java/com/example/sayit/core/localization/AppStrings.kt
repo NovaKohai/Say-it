@@ -124,7 +124,45 @@ data class AppStrings(
     val devModeActive: String,
     val lockDevMode: String,
     val languageTitle: String,
-    val languageDesc: String
+    val languageDesc: String,
+
+    // Accessibility Labels (a11y)
+    val voiceInputDesc: String = "تسجيل صوتي",
+    val sendMessageDesc: String = "إرسال رسالة",
+    val backDesc: String = "رجوع",
+    val clearChatDesc: String = "مسح المحادثة",
+    val clearChatConfirmTitle: String = "مسح المحادثة؟",
+    val clearChatConfirmMessage: String = "هل تريد مسح كل الرسائل والبدء من جديد؟",
+
+    // Installments & Debts
+    val installmentsTitle: String = "الأقساط والمديونيات",
+    val installmentsSubtitle: String = "إدارة الأقساط ومسار التصفير",
+    val addInstallment: String = "إضافة قسط",
+    val activeInstallments: String = "النشطة",
+    val completedInstallments: String = "المكتملة",
+    val monthlyObligations: String = "الالتزام الشهري",
+    val totalDebtRemaining: String = "إجمالي المتبقي",
+    val noInstallmentsFound: String = "لا توجد أقساط مسجلة",
+    val recordPayment: String = "سداد قسط",
+    val payoffProgress: String = "مسار التصفير",
+    val installmentName: String = "اسم القسط / السلعة",
+    val providerLabel: String = "الجهة / البنك",
+    val monthlyAmountLabel: String = "القسط الشهري",
+    val totalAmountLabel: String = "المبلغ الإجمالي",
+    val durationMonthsLabel: String = "المدة بالأشهر",
+    val startDateLabel: String = "تاريخ البداية",
+    val deleteInstallmentConfirm: String = "حذف القسط",
+    val deleteInstallmentMessage: String = "هل أنت متأكد من حذف هذا القسط وسجلاته؟",
+    val dueThisMonth: String = "مستحق هذا الشهر",
+    val paidThisMonth: String = "تم سداد هذا الشهر",
+    val overdue: String = "متأخر",
+    val upcomingInstallmentNotice: String = "أقساط قادمة هذا الأسبوع",
+    val viewAllInstallments: String = "عرض كل الأقساط",
+
+    // Analytics Comparison
+    val vsLastMonth: String = "مقارنة بالشهر السابق",
+    val spendingIncrease: String = "زيادة في الصرف",
+    val spendingDecrease: String = "توفير في الصرف"
 ) {
     val isArabic: Boolean
         get() = currency != "EGP"

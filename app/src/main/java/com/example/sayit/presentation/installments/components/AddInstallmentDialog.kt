@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,9 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.sayit.core.localization.LocalStrings
 import com.example.sayit.domain.model.Installment
 import com.example.sayit.domain.model.InstallmentProvider
 import com.example.sayit.domain.model.InstallmentStatus
+import com.example.sayit.theme.Emerald500
 import java.util.Calendar
 import java.util.UUID
 
@@ -52,6 +55,9 @@ fun AddInstallmentDialog(
     onDismiss: () -> Unit,
     onSave: (Installment) -> Unit
 ) {
+    val strings = LocalStrings.current
+    val isArabic = strings.isArabic
+
     var name by remember { mutableStateOf("") }
     var selectedProvider by remember { mutableStateOf(InstallmentProvider.VALU) }
     var isProviderDropdownOpen by remember { mutableStateOf(false) }
@@ -84,16 +90,19 @@ fun AddInstallmentDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "إضافة خطة تقسيط جديدة",
+                        text = if (isArabic) "إضافة خطة تقسيط جديدة" else "Add New Installment Plan",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     )
-                    IconButton(onClick = onDismiss) {
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(48.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "إلغاء",
+                            contentDescription = strings.close,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -105,7 +114,7 @@ fun AddInstallmentDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it; errorMessage = null },
-                    label = { Text("اسم القسط / الغرض (مثال: هاتف جديد، سيارة)") },
+                    label = { Text(if (isArabic) "اسم القسط / الغرض (مثال: هاتف جديد، سيارة)" else "Item / Installment Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
@@ -116,10 +125,10 @@ fun AddInstallmentDialog(
                 // Provider Selector
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = selectedProvider.displayNameAr,
+                        value = if (isArabic) selectedProvider.displayNameAr else selectedProvider.displayNameEn,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("جهة التقسيط / البنك") },
+                        label = { Text(strings.providerLabel) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { isProviderDropdownOpen = true },
@@ -142,7 +151,7 @@ fun AddInstallmentDialog(
                     ) {
                         InstallmentProvider.entries.forEach { prov ->
                             DropdownMenuItem(
-                                text = { Text(prov.displayNameAr) },
+                                text = { Text(if (isArabic) prov.displayNameAr else prov.displayNameEn) },
                                 onClick = {
                                     selectedProvider = prov
                                     isProviderDropdownOpen = false
@@ -170,7 +179,7 @@ fun AddInstallmentDialog(
                                 totalAmountStr = (monthly * months).toInt().toString()
                             }
                         },
-                        label = { Text("القسط الشهري (ج.م)") },
+                        label = { Text("${strings.monthlyAmountLabel} (${strings.currency})") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1.2f),
@@ -188,7 +197,7 @@ fun AddInstallmentDialog(
                                 totalAmountStr = (monthly * months).toInt().toString()
                             }
                         },
-                        label = { Text("عدد الشهور") },
+                        label = { Text(strings.durationMonthsLabel) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(0.8f),
@@ -214,7 +223,7 @@ fun AddInstallmentDialog(
                                 monthlyAmountStr = (total / months).toInt().toString()
                             }
                         },
-                        label = { Text("إجمالي المديونية") },
+                        label = { Text(strings.totalAmountLabel) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1.2f),
@@ -224,7 +233,7 @@ fun AddInstallmentDialog(
                     OutlinedTextField(
                         value = dueDayStr,
                         onValueChange = { dueDayStr = it },
-                        label = { Text("يوم الاستحقاق") },
+                        label = { Text(if (isArabic) "يوم الاستحقاق" else "Due Day") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(0.8f),
@@ -238,7 +247,7 @@ fun AddInstallmentDialog(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("ملاحظات إضافية (اختياري)") },
+                    label = { Text(if (isArabic) "ملاحظات إضافية (اختياري)" else "Notes (Optional)") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
@@ -261,7 +270,7 @@ fun AddInstallmentDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("إلغاء", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(strings.cancel, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -272,15 +281,15 @@ fun AddInstallmentDialog(
                             val dueDay = dueDayStr.toIntOrNull() ?: 1
 
                             if (name.isBlank()) {
-                                errorMessage = "يرجى كتابة اسم القسط"
+                                errorMessage = if (isArabic) "يرجى كتابة اسم القسط" else "Please enter installment name"
                                 return@Button
                             }
                             if (monthly <= 0) {
-                                errorMessage = "يرجى تحديد القسط الشهري بشكل صحيح"
+                                errorMessage = if (isArabic) "يرجى تحديد القسط الشهري بشكل صحيح" else "Please enter a valid monthly amount"
                                 return@Button
                             }
                             if (months <= 0) {
-                                errorMessage = "يرجى تحديد عدد الشهور"
+                                errorMessage = if (isArabic) "يرجى تحديد عدد الشهور" else "Please enter months duration"
                                 return@Button
                             }
 
@@ -311,12 +320,12 @@ fun AddInstallmentDialog(
                             onSave(newInstallment)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF10B981),
+                            containerColor = Emerald500,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(14.dp)
                     ) {
-                        Text("حفظ الخطة", fontWeight = FontWeight.Bold)
+                        Text(if (isArabic) "حفظ الخطة" else "Save Plan", fontWeight = FontWeight.Bold)
                     }
                 }
             }

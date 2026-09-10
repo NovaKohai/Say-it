@@ -109,6 +109,7 @@ import com.example.sayit.presentation.voice.VoiceInputDialog
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
 import com.example.sayit.theme.Emerald600
+import com.example.sayit.theme.GoldWarning
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import com.example.sayit.presentation.dashboard.components.RealtimeSpendingGraph
@@ -1115,139 +1116,185 @@ private fun InstallmentsDashboardCard(
     uiState: com.example.sayit.presentation.installments.InstallmentsUiState,
     onClick: () -> Unit
 ) {
+    val strings = LocalStrings.current
+    val isArabic = strings.isArabic
     val numberFormat = remember { java.text.NumberFormat.getNumberInstance(java.util.Locale.US).apply { maximumFractionDigits = 0 } }
     val forecast = uiState.forecast
 
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .pressScale(0.97f, onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            .clip(RoundedCornerShape(22.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        CyanAccent.copy(alpha = 0.30f),
+                        Color.White.copy(alpha = 0.05f),
+                        Color.Transparent
+                    )
+                )
+            )
+            .padding(1.2.dp)
     ) {
-        Column(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp)
+                .pressScale(0.97f, onClick = onClick),
+            shape = RoundedCornerShape(21.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(18.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .background(Color(0xFF06B6D4).copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CreditCard,
-                            contentDescription = null,
-                            tint = Color(0xFF06B6D4),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(
-                            text = "الأقساط والمديونيات الشهرية",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                        Text(
-                            text = if (forecast.activeInstallmentsCount > 0) "${forecast.activeInstallmentsCount} خطط نشطة | مسار التصفير التلقائي" else "تتبع أقساطك والمديونيات بذكاء",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        )
-                    }
-                }
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(48.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            if (forecast.activeInstallmentsCount == 0) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "أضف خطتك الأولى لحساب مسار التصفير ورصد الـ SMS",
-                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                    Text(
-                        text = "+ إضافة",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
-                    )
-                }
-            } else {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            text = "المتبقي هذا الشهر",
-                            style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        )
-                        Text(
-                            text = "${numberFormat.format(forecast.currentMonthRemaining)} ج.م",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = if (forecast.isCurrentMonthFullySettled) Color(0xFF10B981) else MaterialTheme.colorScheme.onSurface
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(CyanAccent.copy(alpha = 0.15f))
+                                .border(1.dp, CyanAccent.copy(alpha = 0.35f), RoundedCornerShape(12.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CreditCard,
+                                contentDescription = null,
+                                tint = CyanAccent,
+                                modifier = Modifier.size(22.dp)
                             )
-                        )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = strings.installmentsTitle,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                            Text(
+                                text = if (forecast.activeInstallmentsCount > 0) {
+                                    if (isArabic) "${forecast.activeInstallmentsCount} خطط نشطة | مسار التصفير التلقائي"
+                                    else "${forecast.activeInstallmentsCount} active plans | Auto payoff tracking"
+                                } else {
+                                    if (isArabic) "تتبع أقساطك والمديونيات بذكاء" else "Smart installment & debt tracker"
+                                },
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            )
+                        }
                     }
 
                     Box(
                         modifier = Modifier
-                            .background(
-                                if (forecast.isCurrentMonthFullySettled) Color(0xFF10B981).copy(alpha = 0.18f)
-                                else Color(0xFFF59E0B).copy(alpha = 0.18f),
-                                RoundedCornerShape(12.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.05f)),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (forecast.isCurrentMonthFullySettled) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(14.dp)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = strings.viewAllInstallments,
+                            tint = CyanAccent,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                if (forecast.activeInstallmentsCount == 0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF090D16))
+                            .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (isArabic) "أضف خطتك الأولى لحساب مسار التصفير ورصد الـ SMS"
+                            else "Add your first plan to track debt payoff & bank SMS",
+                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+                        Text(
+                            text = "+ ${strings.addInstallment}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Emerald500)
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = if (isArabic) "المتبقي هذا الشهر" else "Due This Month",
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            )
+                            Text(
+                                text = "${numberFormat.format(forecast.currentMonthRemaining)} ${strings.currency}",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (forecast.isCurrentMonthFullySettled) Emerald500 else MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "تم سداد قسط هذا الشهر",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF10B981)
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    if (forecast.isCurrentMonthFullySettled) Emerald500.copy(alpha = 0.15f)
+                                    else GoldWarning.copy(alpha = 0.15f)
+                                )
+                                .border(
+                                    1.dp,
+                                    if (forecast.isCurrentMonthFullySettled) Emerald500.copy(alpha = 0.35f)
+                                    else GoldWarning.copy(alpha = 0.35f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (forecast.isCurrentMonthFullySettled) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        tint = Emerald500,
+                                        modifier = Modifier.size(15.dp)
                                     )
-                                )
-                            } else {
-                                Text(
-                                    text = "مسدد: ${numberFormat.format(forecast.currentMonthPaid)} ج.م",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFF59E0B)
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (isArabic) "تم سداد قسط هذا الشهر" else "Month Fully Settled",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = Emerald500
+                                        )
                                     )
-                                )
+                                } else {
+                                    Text(
+                                        text = if (isArabic) "مسدد: ${numberFormat.format(forecast.currentMonthPaid)} ${strings.currency}"
+                                        else "Paid: ${numberFormat.format(forecast.currentMonthPaid)} ${strings.currency}",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = GoldWarning
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

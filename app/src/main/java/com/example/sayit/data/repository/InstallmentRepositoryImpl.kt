@@ -328,11 +328,14 @@ class InstallmentRepositoryImpl(
 
         val projCal = Calendar.getInstance()
         val monthNamesAr = arrayOf("يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر")
+        val monthNamesEn = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
+        val curMIdx = projCal.get(Calendar.MONTH)
         // First point: current state
         projection.add(
             MonthForecastPoint(
-                monthLabel = "${monthNamesAr[projCal.get(Calendar.MONTH)]} (الآن)",
+                monthLabel = "${monthNamesAr[curMIdx]} (الآن)",
+                monthLabelEn = "${monthNamesEn[curMIdx]} (Now)",
                 monthYearKey = curMonthKey,
                 remainingDebt = runningDebt,
                 monthlyPaymentDue = curMonthDues
@@ -341,8 +344,10 @@ class InstallmentRepositoryImpl(
 
         for (step in 1..18) {
             projCal.add(Calendar.MONTH, 1)
-            val stepMonthKey = String.format(Locale.US, "%04d-%02d", projCal.get(Calendar.YEAR), projCal.get(Calendar.MONTH) + 1)
-            val stepMonthLabel = monthNamesAr[projCal.get(Calendar.MONTH)]
+            val stepMIdx = projCal.get(Calendar.MONTH)
+            val stepMonthKey = String.format(Locale.US, "%04d-%02d", projCal.get(Calendar.YEAR), stepMIdx + 1)
+            val stepMonthLabel = monthNamesAr[stepMIdx]
+            val stepMonthLabelEn = monthNamesEn[stepMIdx]
 
             // Sum active payments for this future month
             val stepDues = active.filter { it.endDate >= projCal.timeInMillis }.sumOf { it.monthlyAmount }
@@ -351,6 +356,7 @@ class InstallmentRepositoryImpl(
             projection.add(
                 MonthForecastPoint(
                     monthLabel = stepMonthLabel,
+                    monthLabelEn = stepMonthLabelEn,
                     monthYearKey = stepMonthKey,
                     remainingDebt = runningDebt,
                     monthlyPaymentDue = stepDues

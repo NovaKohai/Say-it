@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class InstallmentFilter(val labelAr: String) {
-    ALL("الكل"),
-    ACTIVE("النشطة"),
-    COMPLETED("المسددة بالكامل")
+enum class InstallmentFilter(val labelAr: String, val labelEn: String) {
+    ALL("الكل", "All"),
+    ACTIVE("النشطة", "Active"),
+    COMPLETED("المسددة بالكامل", "Completed")
 }
 
 data class InstallmentsUiState(

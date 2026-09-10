@@ -38,7 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.sayit.core.localization.LocalStrings
 import com.example.sayit.domain.model.Installment
+import com.example.sayit.theme.Emerald500
+import com.example.sayit.theme.GoldWarning
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -49,6 +52,9 @@ fun RecordPaymentDialog(
     onDismiss: () -> Unit,
     onConfirmPayment: (installmentId: String, monthYear: String, paidAmount: Double) -> Unit
 ) {
+    val strings = LocalStrings.current
+    val isArabic = strings.isArabic
+
     val cal = Calendar.getInstance()
     val curMonthKey = String.format(Locale.US, "%04d-%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1)
     val curRecord = installment.monthlyRecords.firstOrNull { it.monthYear == curMonthKey }
@@ -82,25 +88,28 @@ fun RecordPaymentDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "تسجيل سداد القسط",
+                            text = if (isArabic) "تسجيل سداد القسط" else "Record Installment Payment",
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         )
                         Text(
-                            text = "${installment.name} (${installment.provider.displayNameAr})",
+                            text = "${installment.name} (${if (isArabic) installment.provider.displayNameAr else installment.provider.displayNameEn})",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
-                    IconButton(onClick = onDismiss) {
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(48.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "إلغاء",
+                            contentDescription = strings.close,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -121,11 +130,11 @@ fun RecordPaymentDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "قسط هذا الشهر:",
+                                text = if (isArabic) "قسط هذا الشهر:" else "This Month's Due:",
                                 style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                             )
                             Text(
-                                text = "${numberFormat.format(dueAmount)} ج.م",
+                                text = "${numberFormat.format(dueAmount)} ${strings.currency}",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                             )
                         }
@@ -137,14 +146,14 @@ fun RecordPaymentDialog(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "تم سداده حتى الآن:",
-                                    style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF10B981))
+                                    text = if (isArabic) "تم سداده حتى الآن:" else "Paid So Far:",
+                                    style = MaterialTheme.typography.bodyMedium.copy(color = Emerald500)
                                 )
                                 Text(
-                                    text = "${numberFormat.format(existingPaid)} ج.م",
+                                    text = "${numberFormat.format(existingPaid)} ${strings.currency}",
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF10B981)
+                                        color = Emerald500
                                     )
                                 )
                             }
@@ -156,16 +165,16 @@ fun RecordPaymentDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "المتبقي للاكتمال:",
+                                text = if (isArabic) "المتبقي للاكتمال:" else "Remaining to Settle:",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = if (remainingDue > 0) Color(0xFFF59E0B) else Color(0xFF10B981)
+                                    color = if (remainingDue > 0) GoldWarning else Emerald500
                                 )
                             )
                             Text(
-                                text = "${numberFormat.format(remainingDue)} ج.م",
+                                text = "${numberFormat.format(remainingDue)} ${strings.currency}",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = if (remainingDue > 0) Color(0xFFF59E0B) else Color(0xFF10B981)
+                                    color = if (remainingDue > 0) GoldWarning else Emerald500
                                 )
                             )
                         }
@@ -183,7 +192,7 @@ fun RecordPaymentDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF10B981)
+                            contentColor = Emerald500
                         )
                     ) {
                         Icon(
@@ -193,7 +202,11 @@ fun RecordPaymentDialog(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "سداد القسط بالكامل (${numberFormat.format(remainingDue)} ج.م)",
+                            text = if (isArabic) {
+                                "سداد القسط بالكامل (${numberFormat.format(remainingDue)} ${strings.currency})"
+                            } else {
+                                "Pay Full Installment (${numberFormat.format(remainingDue)} ${strings.currency})"
+                            },
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -208,7 +221,9 @@ fun RecordPaymentDialog(
                         paymentAmountInput = it
                         errorMessage = null
                     },
-                    label = { Text("أو حدد المبلغ المدفوع (سداد جزئي أو كامل)") },
+                    label = {
+                        Text(if (isArabic) "أو حدد المبلغ المدفوع (سداد جزئي أو كامل)" else "Or enter custom payment amount")
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -232,27 +247,26 @@ fun RecordPaymentDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("إلغاء", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(strings.cancel, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
                             val enteredAmt = paymentAmountInput.toDoubleOrNull()
                             if (enteredAmt == null || enteredAmt < 0) {
-                                errorMessage = "يرجى إدخال مبلغ صحيح"
+                                errorMessage = if (isArabic) "يرجى إدخال مبلغ صحيح" else "Please enter a valid amount"
                                 return@Button
                             }
-                            // If enteredAmt is added to existing, pass cumulative
                             val cumulative = existingPaid + enteredAmt
                             onConfirmPayment(installment.id, curMonthKey, cumulative)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF10B981),
+                            containerColor = Emerald500,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(14.dp)
                     ) {
-                        Text("تأكيد السداد", fontWeight = FontWeight.Bold)
+                        Text(if (isArabic) "تأكيد السداد" else "Confirm Payment", fontWeight = FontWeight.Bold)
                     }
                 }
             }

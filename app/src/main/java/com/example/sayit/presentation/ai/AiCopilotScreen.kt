@@ -38,6 +38,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Mic
@@ -63,6 +64,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -105,6 +108,7 @@ fun AiCopilotScreen(
     val isArabic = strings.currency != "EGP"
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
+    var showClearChatDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.initGreeting(isArabic)
@@ -153,10 +157,15 @@ fun AiCopilotScreen(
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onNavigateBack, modifier = Modifier.pressScale(0.92f)) {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier
+                    .size(48.dp)
+                    .pressScale(0.92f)
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = strings.backDesc,
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -238,6 +247,23 @@ fun AiCopilotScreen(
                         color = if (uiState.isApiKeyConfigured) Emerald500 else Color(0xFFF59E0B)
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            // Clear Chat Action
+            IconButton(
+                onClick = { showClearChatDialog = true },
+                modifier = Modifier
+                    .size(48.dp)
+                    .pressScale(0.92f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteSweep,
+                    contentDescription = strings.clearChatDesc,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    modifier = Modifier.size(22.dp)
+                )
             }
         }
 
@@ -341,14 +367,14 @@ fun AiCopilotScreen(
             IconButton(
                 onClick = onStartVoiceInput,
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .pressScale(0.92f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Mic,
-                    contentDescription = "Voice",
+                    contentDescription = strings.voiceInputDesc,
                     tint = Emerald500
                 )
             }
@@ -359,17 +385,41 @@ fun AiCopilotScreen(
                 onClick = { viewModel.sendMessage(uiState.inputText, isArabic) },
                 enabled = uiState.inputText.isNotBlank() && !uiState.isLoading,
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .background(if (uiState.inputText.isNotBlank() && !uiState.isLoading) Emerald600 else MaterialTheme.colorScheme.surfaceVariant)
                     .pressScale(0.92f)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "Send",
+                    contentDescription = strings.sendMessageDesc,
                     tint = if (uiState.inputText.isNotBlank() && !uiState.isLoading) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        }
+
+        if (showClearChatDialog) {
+            AlertDialog(
+                onDismissRequest = { showClearChatDialog = false },
+                title = { Text(strings.clearChatConfirmTitle) },
+                text = { Text(strings.clearChatConfirmMessage) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.clearChat(isArabic)
+                            showClearChatDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(strings.clearChatDesc)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showClearChatDialog = false }) {
+                        Text(strings.cancel)
+                    }
+                }
+            )
         }
     }
 }

@@ -2,12 +2,14 @@ package com.example.sayit.presentation.installments
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +26,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -44,7 +45,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.example.sayit.theme.Emerald600
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,16 +53,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sayit.core.localization.LocalStrings
 import com.example.sayit.domain.model.Installment
-import com.example.sayit.domain.model.InstallmentStatus
 import com.example.sayit.domain.model.PaymentStatus
+import com.example.sayit.presentation.common.pressScale
 import com.example.sayit.presentation.installments.components.AddInstallmentDialog
 import com.example.sayit.presentation.installments.components.InstallmentPayoffGraph
 import com.example.sayit.presentation.installments.components.RecordPaymentDialog
+import com.example.sayit.theme.CyanAccent
+import com.example.sayit.theme.Emerald500
+import com.example.sayit.theme.Emerald600
+import com.example.sayit.theme.GoldWarning
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -73,6 +80,8 @@ fun InstallmentsScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val strings = LocalStrings.current
+    val isArabic = strings.isArabic
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -101,28 +110,40 @@ fun InstallmentsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onNavigateBack) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .pressScale(0.92f)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "رجوع",
+                            contentDescription = strings.backDesc,
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     Column {
                         Text(
-                            text = "الأقساط والمديونيات",
+                            text = strings.installmentsTitle,
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
-                            )
+                            ),
+                            maxLines = 1
                         )
                         Text(
-                            text = "إدارة الأقساط الشهرية ومسار التصفير",
+                            text = strings.installmentsSubtitle,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            ),
+                            maxLines = 1
                         )
                     }
                 }
@@ -133,15 +154,23 @@ fun InstallmentsScreen(
                         containerColor = Emerald600,
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = 48.dp)
+                        .pressScale(0.95f)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("خطة جديدة", fontWeight = FontWeight.Bold)
+                    Text(
+                        text = strings.addInstallment,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
                 }
             }
         }
@@ -151,7 +180,7 @@ fun InstallmentsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 100.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Payoff Forecast Graph
             item {
@@ -161,73 +190,111 @@ fun InstallmentsScreen(
                 )
             }
 
-            // Top Status KPI Summary Cards
+            // Top Status KPI Summary Cards (Double-Bezel Doppelrand Architecture)
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Current Month Summary Card
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        Emerald500.copy(alpha = 0.30f),
+                                        Color.White.copy(alpha = 0.05f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                            .padding(1.2.dp)
                     ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Text(
-                                text = "أقساط هذا الشهر",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Card(
+                            shape = RoundedCornerShape(19.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(
+                                    text = strings.dueThisMonth,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${numberFormat.format(uiState.forecast.currentMonthDues)} ج.م",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${numberFormat.format(uiState.forecast.currentMonthDues)} ${strings.currency}",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            val isSettled = uiState.forecast.isCurrentMonthFullySettled
-                            Text(
-                                text = if (isSettled) "تم سداد الشهر بالكامل" else "تم سداد ${numberFormat.format(uiState.forecast.currentMonthPaid)} ج.م",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = if (isSettled) Color(0xFF10B981) else Color(0xFFF59E0B),
-                                    fontWeight = FontWeight.SemiBold
+                                Spacer(modifier = Modifier.height(6.dp))
+                                val isSettled = uiState.forecast.isCurrentMonthFullySettled
+                                Text(
+                                    text = if (isSettled) {
+                                        if (isArabic) "تم سداد الشهر بالكامل" else "Month Fully Settled"
+                                    } else {
+                                        if (isArabic) "تم سداد ${numberFormat.format(uiState.forecast.currentMonthPaid)} ${strings.currency}"
+                                        else "Paid ${numberFormat.format(uiState.forecast.currentMonthPaid)} ${strings.currency}"
+                                    },
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = if (isSettled) Emerald500 else GoldWarning,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
 
                     // Active Plans Count Card
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        CyanAccent.copy(alpha = 0.30f),
+                                        Color.White.copy(alpha = 0.05f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                            .padding(1.2.dp)
                     ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Text(
-                                text = "الخطط النشطة",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Card(
+                            shape = RoundedCornerShape(19.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(
+                                    text = strings.activeInstallments,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${uiState.forecast.activeInstallmentsCount} خطط",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF06B6D4)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${uiState.forecast.activeInstallmentsCount} ${if (isArabic) "خطط" else "plans"}",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = CyanAccent
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "إجمالي المديونية: ${numberFormat.format(uiState.forecast.totalRemainingDebt)} ج.م",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "${strings.totalDebtRemaining}: ${numberFormat.format(uiState.forecast.totalRemainingDebt)} ${strings.currency}",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    ),
+                                    maxLines = 1
                                 )
-                            )
+                            }
                         }
                     }
                 }
@@ -244,12 +311,12 @@ fun InstallmentsScreen(
                         FilterChip(
                             selected = selected,
                             onClick = { viewModel.setFilter(filter) },
-                            label = { Text(filter.labelAr) },
+                            label = { Text(if (isArabic) filter.labelAr else filter.labelEn) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFF10B981).copy(alpha = 0.2f),
-                                selectedLabelColor = Color(0xFF10B981)
+                                selectedContainerColor = Emerald500.copy(alpha = 0.2f),
+                                selectedLabelColor = Emerald500
                             ),
-                            shape = RoundedCornerShape(10.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
                     }
                 }
@@ -265,7 +332,7 @@ fun InstallmentsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "لا توجد خطط تقسيط مسجلة في هذا التبويب",
+                            text = strings.noInstallmentsFound,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -276,6 +343,8 @@ fun InstallmentsScreen(
                 items(uiState.filteredInstallments, key = { it.id }) { installment ->
                     InstallmentItemCard(
                         installment = installment,
+                        isArabic = isArabic,
+                        currency = strings.currency,
                         onRecordPayment = { payingInstallment = installment },
                         onDelete = { deletingInstallmentId = installment.id }
                     )
@@ -315,8 +384,8 @@ fun InstallmentsScreen(
     deletingInstallmentId?.let { id ->
         AlertDialog(
             onDismissRequest = { deletingInstallmentId = null },
-            title = { Text("حذف خطة التقسيط") },
-            text = { Text("هل أنت متأكد من حذف هذه الخطة وجميع سجلات السداد المرتبطة بها؟") },
+            title = { Text(strings.deleteInstallmentConfirm) },
+            text = { Text(strings.deleteInstallmentMessage) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -325,12 +394,12 @@ fun InstallmentsScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("حذف")
+                    Text(strings.delete)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deletingInstallmentId = null }) {
-                    Text("إلغاء")
+                    Text(strings.cancel)
                 }
             }
         )
@@ -340,6 +409,8 @@ fun InstallmentsScreen(
 @Composable
 private fun InstallmentItemCard(
     installment: Installment,
+    isArabic: Boolean,
+    currency: String,
     onRecordPayment: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -357,175 +428,229 @@ private fun InstallmentItemCard(
         else -> PaymentStatus.UNPAID
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // Header Row: Provider & Title + Delete Icon
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(Color(0xFF06B6D4).copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CreditCard,
-                            contentDescription = null,
-                            tint = Color(0xFF06B6D4),
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = installment.name,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                        Text(
-                            text = installment.provider.displayNameAr,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        )
-                    }
-                }
-
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "حذف",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
+    // Double-Bezel luxury enclosure
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(22.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.12f),
+                        Color.White.copy(alpha = 0.04f),
+                        Color.Transparent
                     )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Progress Bar & Total Debt Overview
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "المسدد: ${numberFormat.format(installment.totalPaid)} ج.م",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color(0xFF10B981),
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    )
-                    Text(
-                        text = "الإجمالي: ${numberFormat.format(installment.totalAmount)} ج.م",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.height(6.dp))
-                LinearProgressIndicator(
-                    progress = { installment.progressRatio },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp),
-                    color = Color(0xFF10B981),
-                    trackColor = Color.White.copy(alpha = 0.1f),
                 )
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Current Month Status Banner
-            Box(
+            )
+            .padding(1.2.dp)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(21.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        when (paymentStatus) {
-                            PaymentStatus.PAID -> Color(0xFF10B981).copy(alpha = 0.15f)
-                            PaymentStatus.PARTIALLY_PAID -> Color(0xFFF59E0B).copy(alpha = 0.15f)
-                            PaymentStatus.UNPAID -> MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                        },
-                        RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .padding(16.dp)
             ) {
+                // Header Row: Provider & Title + Delete Icon
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = when (paymentStatus) {
-                                PaymentStatus.PAID -> Icons.Default.CheckCircle
-                                PaymentStatus.PARTIALLY_PAID -> Icons.Default.Schedule
-                                PaymentStatus.UNPAID -> Icons.Default.Schedule
-                            },
-                            contentDescription = null,
-                            tint = when (paymentStatus) {
-                                PaymentStatus.PAID -> Color(0xFF10B981)
-                                PaymentStatus.PARTIALLY_PAID -> Color(0xFFF59E0B)
-                                PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = when (paymentStatus) {
-                                PaymentStatus.PAID -> "تم سداد قسط هذا الشهر"
-                                PaymentStatus.PARTIALLY_PAID -> "مدفوع جزئياً: ${numberFormat.format(paidAmount)} من ${numberFormat.format(dueAmount)} ج.م"
-                                PaymentStatus.UNPAID -> "مستحق: ${numberFormat.format(dueAmount)} ج.م (يوم ${installment.dueDayOfMonth})"
-                            },
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = when (paymentStatus) {
-                                    PaymentStatus.PAID -> Color(0xFF10B981)
-                                    PaymentStatus.PARTIALLY_PAID -> Color(0xFFF59E0B)
-                                    PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurface
-                                }
-                            )
-                        )
-                    }
-
-                    if (paymentStatus != PaymentStatus.PAID) {
-                        OutlinedButton(
-                            onClick = onRecordPayment,
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF10B981)
-                            )
-                        ) {
-                            Text("تسجيل سداد", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
-                    } else {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFF10B981), CircleShape)
-                                .size(24.dp),
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(CyanAccent.copy(alpha = 0.15f))
+                                .border(1.dp, CyanAccent.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.CheckCircle,
+                                imageVector = Icons.Default.CreditCard,
                                 contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                tint = CyanAccent,
+                                modifier = Modifier.size(22.dp)
                             )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = installment.name,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                ),
+                                maxLines = 1
+                            )
+                            Text(
+                                text = if (isArabic) installment.provider.displayNameAr else installment.provider.displayNameEn,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .pressScale(0.92f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = if (isArabic) "حذف القسط" else "Delete Installment",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Progress Bar & Total Debt Overview
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "${if (isArabic) "المسدد" else "Paid"}: ${numberFormat.format(installment.totalPaid)} $currency",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Emerald500,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                        Text(
+                            text = "${if (isArabic) "الإجمالي" else "Total"}: ${numberFormat.format(installment.totalAmount)} $currency",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    LinearProgressIndicator(
+                        progress = { installment.progressRatio },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(CircleShape),
+                        color = Emerald500,
+                        trackColor = Color.White.copy(alpha = 0.1f),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Current Month Status Banner
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(
+                            when (paymentStatus) {
+                                PaymentStatus.PAID -> Emerald500.copy(alpha = 0.15f)
+                                PaymentStatus.PARTIALLY_PAID -> GoldWarning.copy(alpha = 0.15f)
+                                PaymentStatus.UNPAID -> MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                            }
+                        )
+                        .border(
+                            1.dp,
+                            when (paymentStatus) {
+                                PaymentStatus.PAID -> Emerald500.copy(alpha = 0.35f)
+                                PaymentStatus.PARTIALLY_PAID -> GoldWarning.copy(alpha = 0.35f)
+                                PaymentStatus.UNPAID -> Color.White.copy(alpha = 0.08f)
+                            },
+                            RoundedCornerShape(14.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = when (paymentStatus) {
+                                    PaymentStatus.PAID -> Icons.Default.CheckCircle
+                                    PaymentStatus.PARTIALLY_PAID -> Icons.Default.Schedule
+                                    PaymentStatus.UNPAID -> Icons.Default.Schedule
+                                },
+                                contentDescription = null,
+                                tint = when (paymentStatus) {
+                                    PaymentStatus.PAID -> Emerald500
+                                    PaymentStatus.PARTIALLY_PAID -> GoldWarning
+                                    PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = when (paymentStatus) {
+                                    PaymentStatus.PAID -> if (isArabic) "تم سداد قسط هذا الشهر" else "Month installment paid"
+                                    PaymentStatus.PARTIALLY_PAID -> if (isArabic) {
+                                        "مدفوع جزئياً: ${numberFormat.format(paidAmount)} من ${numberFormat.format(dueAmount)} $currency"
+                                    } else {
+                                        "Partially paid: ${numberFormat.format(paidAmount)} / ${numberFormat.format(dueAmount)} $currency"
+                                    }
+                                    PaymentStatus.UNPAID -> if (isArabic) {
+                                        "مستحق: ${numberFormat.format(dueAmount)} $currency (يوم ${installment.dueDayOfMonth})"
+                                    } else {
+                                        "Due: ${numberFormat.format(dueAmount)} $currency (Day ${installment.dueDayOfMonth})"
+                                    }
+                                },
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = when (paymentStatus) {
+                                        PaymentStatus.PAID -> Emerald500
+                                        PaymentStatus.PARTIALLY_PAID -> GoldWarning
+                                        PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurface
+                                    }
+                                )
+                            )
+                        }
+
+                        if (paymentStatus != PaymentStatus.PAID) {
+                            OutlinedButton(
+                                onClick = onRecordPayment,
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Emerald500
+                                ),
+                                modifier = Modifier.pressScale(0.95f)
+                            ) {
+                                Text(
+                                    text = if (isArabic) "تسجيل سداد" else "Pay",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .background(Emerald500, CircleShape)
+                                    .size(26.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }

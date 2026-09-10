@@ -100,6 +100,7 @@ data class Installment(
 
 data class MonthForecastPoint(
     val monthLabel: String,
+    val monthLabelEn: String = "",
     val monthYearKey: String,
     val remainingDebt: Double,
     val monthlyPaymentDue: Double

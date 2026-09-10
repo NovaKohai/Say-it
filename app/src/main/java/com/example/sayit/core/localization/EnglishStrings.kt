@@ -122,5 +122,43 @@ val EnglishStrings = AppStrings(
     devModeActive = "Developer Mode Active",
     lockDevMode = "Lock Developer Mode",
     languageTitle = "App Language",
-    languageDesc = "Choose your preferred interface language"
+    languageDesc = "Choose your preferred interface language",
+
+    // Accessibility Labels (a11y)
+    voiceInputDesc = "Voice input",
+    sendMessageDesc = "Send message",
+    backDesc = "Go back",
+    clearChatDesc = "Clear conversation",
+    clearChatConfirmTitle = "Clear conversation?",
+    clearChatConfirmMessage = "Do you want to clear all messages and start fresh?",
+
+    // Installments & Debts
+    installmentsTitle = "Installments",
+    installmentsSubtitle = "Manage monthly installments & zero-debt path",
+    addInstallment = "Add Installment",
+    activeInstallments = "Active",
+    completedInstallments = "Completed",
+    monthlyObligations = "Monthly Obligations",
+    totalDebtRemaining = "Total Remaining Debt",
+    noInstallmentsFound = "No installments recorded",
+    recordPayment = "Record Payment",
+    payoffProgress = "Payoff Progress",
+    installmentName = "Installment / Item Name",
+    providerLabel = "Provider / Bank",
+    monthlyAmountLabel = "Monthly Amount",
+    totalAmountLabel = "Total Amount",
+    durationMonthsLabel = "Duration (Months)",
+    startDateLabel = "Start Date",
+    deleteInstallmentConfirm = "Delete Installment",
+    deleteInstallmentMessage = "Are you sure you want to delete this installment and its payment history?",
+    dueThisMonth = "Due This Month",
+    paidThisMonth = "Paid This Month",
+    overdue = "Overdue",
+    upcomingInstallmentNotice = "Upcoming Installments This Week",
+    viewAllInstallments = "View All Installments",
+
+    // Analytics Comparison
+    vsLastMonth = "vs Last Month",
+    spendingIncrease = "Spending Increase",
+    spendingDecrease = "Spending Saved"
 )
