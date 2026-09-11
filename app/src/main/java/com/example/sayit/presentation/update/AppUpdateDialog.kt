@@ -82,6 +82,7 @@ fun AppUpdateDialog(
 ) {
     if (!uiState.isDialogVisible || uiState.updateInfo == null) return
 
+    val strings = com.example.sayit.core.localization.LocalStrings.current
     val info = uiState.updateInfo
     val context = LocalContext.current
 
@@ -112,7 +113,7 @@ fun AppUpdateDialog(
                 .padding(vertical = 24.dp)
                 .border(
                     width = 1.dp,
-                    color = Emerald500.copy(alpha = 0.35f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
                     shape = RoundedCornerShape(28.dp)
                 )
         ) {
@@ -131,14 +132,14 @@ fun AppUpdateDialog(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Emerald500.copy(alpha = 0.15f))
-                            .border(1.dp, Emerald500.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            text = if (isArabic) "🚀 تحديث جديد متوفر" else "🚀 New Update Available",
+                            text = strings.newUpdateAvailable,
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Emerald500
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -149,7 +150,7 @@ fun AppUpdateDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = if (isArabic) "إغلاق" else "Close",
+                                contentDescription = strings.close,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -172,10 +173,10 @@ fun AppUpdateDialog(
 
                 val iconBgColor by animateColorAsState(
                     targetValue = when {
-                        uiState.isReadyToInstall -> Emerald500
+                        uiState.isReadyToInstall -> MaterialTheme.colorScheme.primary
                         uiState.isDownloading -> CyanAccent
                         uiState.userErrorMessage != null -> MaterialTheme.colorScheme.error
-                        else -> Emerald500
+                        else -> MaterialTheme.colorScheme.primary
                     },
                     label = "iconBgColor"
                 )
@@ -214,7 +215,7 @@ fun AppUpdateDialog(
                 // Title & Version comparison
                 Text(
                     text = info.releaseTitle.ifBlank {
-                        if (isArabic) "إصدار جديد متوفر الآن" else "New Version Ready"
+                        strings.newVersionReady
                     },
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
                     color = MaterialTheme.colorScheme.onSurface,
@@ -230,7 +231,7 @@ fun AppUpdateDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = if (isArabic) "الحالي: v${info.currentVersionName}" else "Current: v${info.currentVersionName}",
+                        text = strings.currentVersionFormat.format(info.currentVersionName),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -238,13 +239,13 @@ fun AppUpdateDialog(
                     Text(
                         text = " ➔ ",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Emerald500
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     Text(
                         text = "v${info.latestVersionName}",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        color = Emerald500
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     if (info.apkSizeMb > 0) {
@@ -276,9 +277,9 @@ fun AppUpdateDialog(
                                 .verticalScroll(rememberScrollState())
                         ) {
                             Text(
-                                text = if (isArabic) "ما الجديد في هذا الإصدار:" else "What's new in this release:",
+                                text = strings.whatsNewTitle,
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Emerald500
+                                color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -333,7 +334,7 @@ fun AppUpdateDialog(
                                             .clip(RoundedCornerShape(6.dp))
                                             .background(
                                                 Brush.horizontalGradient(
-                                                    listOf(Emerald500, CyanAccent)
+                                                    listOf(MaterialTheme.colorScheme.primary, CyanAccent)
                                                 )
                                             )
                                     )
@@ -346,9 +347,9 @@ fun AppUpdateDialog(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = if (isArabic) "جاري التحميل... $percent%" else "Downloading... $percent%",
+                                        text = strings.downloadingFormat.format(percent),
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                        color = Emerald500
+                                        color = MaterialTheme.colorScheme.primary
                                     )
 
                                     val downloadedMb = (uiState.downloadProgress.bytesDownloaded / (1024.0 * 1024.0) * 10).toInt() / 10.0
@@ -367,16 +368,17 @@ fun AppUpdateDialog(
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
-                                OutlinedButton(
+                                val pressInteraction25 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                OutlinedButton(interactionSource = pressInteraction25,
                                     onClick = onCancelDownload,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(44.dp)
-                                        .pressScale(),
+                                        .pressScale(interactionSource = pressInteraction25),
                                     shape = RoundedCornerShape(14.dp)
                                 ) {
                                     Text(
-                                        text = if (isArabic) "إلغاء التحميل" else "Cancel Download",
+                                        text = strings.cancelDownload,
                                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                         color = MaterialTheme.colorScheme.error
                                     )
@@ -390,28 +392,29 @@ fun AppUpdateDialog(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = if (isArabic) "تم تحميل التحديث بنجاح! جاهز للتثبيت 📦" else "Download finished! Ready to install 📦",
+                                    text = strings.downloadFinished,
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Emerald500,
+                                    color = MaterialTheme.colorScheme.primary,
                                     textAlign = TextAlign.Center
                                 )
 
                                 Spacer(modifier = Modifier.height(14.dp))
 
-                                Button(
+                                val pressInteraction26 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                Button(interactionSource = pressInteraction26,
                                     onClick = onInstallUpdate,
-                                    colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                     shape = RoundedCornerShape(16.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(50.dp)
-                                        .pressScale()
+                                        .pressScale(interactionSource = pressInteraction26)
                                 ) {
                                     Text(
-                                        text = if (isArabic) "تثبيت التحديث الآن 📦" else "Install Update Now 📦",
+                                        text = strings.installUpdateNow,
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                 }
@@ -424,7 +427,7 @@ fun AppUpdateDialog(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = uiState.userErrorMessage ?: (if (isArabic) "تعذر تنزيل التحديث" else "Failed to download update"),
+                                    text = uiState.userErrorMessage ?: (strings.downloadFailed),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.error,
                                     textAlign = TextAlign.Center
@@ -436,7 +439,8 @@ fun AppUpdateDialog(
                                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    OutlinedButton(
+                                    val pressInteraction27 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                    OutlinedButton(interactionSource = pressInteraction27,
                                         onClick = {
                                             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(info.htmlUrl))
                                             browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -446,30 +450,31 @@ fun AppUpdateDialog(
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(48.dp)
-                                            .pressScale()
+                                            .pressScale(interactionSource = pressInteraction27)
                                     ) {
                                         Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text(
-                                            text = if (isArabic) "المتصفح" else "Browser",
+                                            text = strings.browserButton,
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
                                         )
                                     }
 
-                                    Button(
+                                    val pressInteraction28 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                    Button(interactionSource = pressInteraction28,
                                         onClick = onStartDownload,
-                                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                         shape = RoundedCornerShape(14.dp),
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(48.dp)
-                                            .pressScale()
+                                            .pressScale(interactionSource = pressInteraction28)
                                     ) {
-                                        Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                        Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text(
-                                            text = if (isArabic) "إعادة المحاولة" else "Retry",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = Color.White)
+                                            text = strings.retryButton,
+                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                                         )
                                     }
                                 }
@@ -482,38 +487,40 @@ fun AppUpdateDialog(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Button(
+                                val pressInteraction29 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                Button(interactionSource = pressInteraction29,
                                     onClick = onStartDownload,
-                                    colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                     shape = RoundedCornerShape(16.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(52.dp)
-                                        .pressScale()
+                                        .pressScale(interactionSource = pressInteraction29)
                                 ) {
-                                    Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = Color.White)
+                                    Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = if (isArabic) "تحديث وتنزيل الآن 🚀" else "Update & Download Now 🚀",
+                                        text = strings.updateDownloadNow,
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                 }
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-                                OutlinedButton(
+                                val pressInteraction30 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                OutlinedButton(interactionSource = pressInteraction30,
                                     onClick = onDismiss,
                                     shape = RoundedCornerShape(16.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(44.dp)
-                                        .pressScale()
+                                        .pressScale(interactionSource = pressInteraction30)
                                 ) {
                                     Text(
-                                        text = if (isArabic) "لاحقاً" else "Later",
+                                        text = strings.laterButton,
                                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

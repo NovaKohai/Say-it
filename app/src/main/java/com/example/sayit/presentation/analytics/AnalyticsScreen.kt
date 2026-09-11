@@ -136,8 +136,8 @@ fun AnalyticsScreen(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                Emerald500.copy(alpha = 0.35f),
-                                CyanAccent.copy(alpha = 0.20f),
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.20f),
                                 Color.Transparent
                             )
                         )
@@ -146,7 +146,7 @@ fun AnalyticsScreen(
             ) {
                 Card(
                     shape = RoundedCornerShape(25.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     if ((forecast?.monthlyBudget ?: 0.0) <= 0) {
@@ -161,14 +161,14 @@ fun AnalyticsScreen(
                                 modifier = Modifier
                                     .size(52.dp)
                                     .clip(CircleShape)
-                                    .background(Emerald500.copy(alpha = 0.15f))
-                                    .border(1.dp, Emerald500.copy(alpha = 0.3f), CircleShape),
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Insights,
                                     contentDescription = null,
-                                    tint = Emerald500,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(26.dp)
                                 )
                             }
@@ -212,9 +212,9 @@ fun AnalyticsScreen(
                                 }
 
                                 val statusColor = when {
-                                    forecast?.isOverBudget == true -> RedExpense
-                                    progress > 0.8f -> GoldWarning
-                                    else -> Emerald500
+                                    forecast?.isOverBudget == true -> MaterialTheme.colorScheme.error
+                                    progress > 0.8f -> MaterialTheme.colorScheme.tertiary
+                                    else -> MaterialTheme.colorScheme.primary
                                 }
 
                                 Box(
@@ -245,8 +245,8 @@ fun AnalyticsScreen(
                                     .fillMaxWidth()
                                     .height(10.dp)
                                     .clip(RoundedCornerShape(5.dp)),
-                                color = if (forecast?.isOverBudget == true) RedExpense else Emerald500,
-                                trackColor = Color.White.copy(alpha = 0.1f)
+                                color = if (forecast?.isOverBudget == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -287,13 +287,13 @@ fun AnalyticsScreen(
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(
-                                            if (monthOverMonthDelta > 0) RedExpense.copy(alpha = 0.12f)
-                                            else Emerald500.copy(alpha = 0.12f)
+                                            if (monthOverMonthDelta > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.12f)
+                                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                         )
                                         .border(
                                             1.dp,
-                                            if (monthOverMonthDelta > 0) RedExpense.copy(alpha = 0.3f)
-                                            else Emerald500.copy(alpha = 0.3f),
+                                            if (monthOverMonthDelta > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
+                                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
                                             RoundedCornerShape(12.dp)
                                         )
                                         .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -307,7 +307,7 @@ fun AnalyticsScreen(
                                             Icon(
                                                 imageVector = if (monthOverMonthDelta > 0) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                                                 contentDescription = null,
-                                                tint = if (monthOverMonthDelta > 0) RedExpense else Emerald500,
+                                                tint = if (monthOverMonthDelta > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                                                 modifier = Modifier.size(16.dp)
                                             )
                                             Spacer(modifier = Modifier.width(6.dp))
@@ -320,7 +320,7 @@ fun AnalyticsScreen(
                                         Text(
                                             text = "${if (monthOverMonthDelta > 0) "+" else ""}${monthOverMonthDelta.toInt()}%",
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = if (monthOverMonthDelta > 0) RedExpense else Emerald500
+                                            color = if (monthOverMonthDelta > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                                         )
                                     }
                                 }
@@ -333,15 +333,15 @@ fun AnalyticsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFF090D16))
-                                    .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
                                     .padding(12.dp)
                             ) {
                                 Row(verticalAlignment = Alignment.Top) {
                                     Icon(
                                         imageVector = Icons.Default.Lightbulb,
                                         contentDescription = null,
-                                        tint = CyanAccent,
+                                        tint = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
@@ -367,8 +367,8 @@ fun AnalyticsScreen(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                Color.White.copy(alpha = 0.10f),
-                                Color.White.copy(alpha = 0.03f),
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f),
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f),
                                 Color.Transparent
                             )
                         )
@@ -377,7 +377,7 @@ fun AnalyticsScreen(
             ) {
                 Card(
                     shape = RoundedCornerShape(23.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
@@ -394,7 +394,7 @@ fun AnalyticsScreen(
                             Icon(
                                 imageVector = Icons.Default.Insights,
                                 contentDescription = null,
-                                tint = Emerald500
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -466,7 +466,7 @@ fun AnalyticsScreen(
                                                 .height(6.dp)
                                                 .clip(RoundedCornerShape(3.dp)),
                                             color = catColor,
-                                            trackColor = Color.White.copy(alpha = 0.08f)
+                                            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                                         )
                                     }
                                 }
@@ -486,8 +486,8 @@ fun AnalyticsScreen(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                CyanAccent.copy(alpha = 0.25f),
-                                Color.White.copy(alpha = 0.04f),
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f),
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f),
                                 Color.Transparent
                             )
                         )
@@ -496,7 +496,7 @@ fun AnalyticsScreen(
             ) {
                 Card(
                     shape = RoundedCornerShape(23.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
@@ -513,7 +513,7 @@ fun AnalyticsScreen(
                             Icon(
                                 imageVector = Icons.Default.Storefront,
                                 contentDescription = null,
-                                tint = CyanAccent
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                         }
 
@@ -539,8 +539,8 @@ fun AnalyticsScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(12.dp))
-                                            .background(Color(0xFF090D16))
-                                            .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
                                             .padding(12.dp),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
@@ -550,13 +550,13 @@ fun AnalyticsScreen(
                                                 modifier = Modifier
                                                     .size(28.dp)
                                                     .clip(CircleShape)
-                                                    .background(CyanAccent.copy(alpha = 0.15f)),
+                                                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "#${index + 1}",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                    color = CyanAccent
+                                                    color = MaterialTheme.colorScheme.secondary
                                                 )
                                             }
                                             Spacer(modifier = Modifier.width(10.dp))
@@ -570,7 +570,7 @@ fun AnalyticsScreen(
                                         Text(
                                             text = "${spent.toInt()} ${strings.currency}",
                                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.ExtraBold),
-                                            color = RedExpense
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                     }
                                 }
@@ -592,8 +592,8 @@ private fun RunwayMetricBox(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF090D16))
-            .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f), RoundedCornerShape(12.dp))
         .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {

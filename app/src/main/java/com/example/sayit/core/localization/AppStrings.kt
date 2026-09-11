@@ -3,6 +3,37 @@ package com.example.sayit.core.localization
 import androidx.compose.runtime.staticCompositionLocalOf
 
 data class AppStrings(
+    val installmentDeletedFeedback: String = "تم حذف خطة التقسيط",
+    val paymentRecordedFeedback: String = "تم تسجيل الدفعة بنجاح",
+    val installmentAddedFeedback: String = "تمت إضافة خطة التقسيط بنجاح",
+    val settingsPleaseEnableNotificationAccessInSettings: String = "يرجى تفعيل صلاحية قراءة الإشعارات من إعدادات الهاتف",
+    val settingsAIAssistantActiveReady: String = "المساعد الذكي نشط ومفعل تلقائياً",
+    val settingsRealConversationalAIFinancialAdvisor: String = "شات بوت ذكي حقيقي لتحليل المصاريف والاستشارات",
+    val settingsAICompanion: String = "المساعد المالي الذكي",
+    val settingsYouAreUsingTheLatestVersionOf: String = "أنت تستخدم أحدث إصدار متاح من Say It! ✅",
+    val settingsCheckNow: String = "فحص الآن",
+    val settingsStartTour: String = "بدء الجولة",
+    val settingsTakeAQuickInteractiveWalkthroughOfAll: String = "تعرّف على أهم مزايا ومساعدات التطبيق خطوة بخطوة",
+    val settingsInteractiveGuideTour: String = "الجولة الإرشادية للتطبيق",
+    val settingsDarkMode: String = "🌙 الوضع الداكن",
+    val settingsLightMode: String = "☀️ الفاتح (الأبيض)",
+    val settingsChooseBetweenCrispLightThemeAndSleek: String = "التبديل بين المظهر الفاتح (الأبيض) والوضع الداكن",
+    val settingsAppAppearance: String = "مظهر التطبيق",
+    val quickLunch: String = "🍽️ غداء",
+    val quickGroceries: String = "🛒 بقالة",
+    val quickTransit: String = "🚗 مواصلات",
+    val quickCoffee: String = "☕ قهوة",
+    val uiSavePlan: String = "حفظ الخطة",
+    val uiPleaseEnterMonthsDuration: String = "يرجى تحديد عدد الشهور",
+    val uiPleaseEnterAValidMonthlyAmount: String = "يرجى تحديد القسط الشهري بشكل صحيح",
+    val uiPleaseEnterInstallmentName: String = "يرجى كتابة اسم القسط",
+    val uiNotesOptional: String = "ملاحظات إضافية (اختياري)",
+    val uiDueDay: String = "يوم الاستحقاق",
+    val uiItemInstallmentName: String = "اسم القسط / الغرض (مثال: هاتف جديد، سيارة)",
+    val uiAddNewInstallmentPlan: String = "إضافة خطة تقسيط جديدة",
+    // ── Language flag (explicit, not derived from currency) ──
+    val isArabic: Boolean = true,
+
     // TopBar & Header
     val appName: String,
     val localOfflineBadge: String,
@@ -159,14 +190,79 @@ data class AppStrings(
     val upcomingInstallmentNotice: String = "أقساط قادمة هذا الأسبوع",
     val viewAllInstallments: String = "عرض كل الأقساط",
 
+    // Installments – NEW keys (Phase 1 i18n)
+    val monthFullySettled: String = "تم سداد الشهر بالكامل",
+    val plansCount: String = "خطط",
+    val paidLabel: String = "المسدد",
+    val totalLabel: String = "الإجمالي",
+    val monthInstallmentPaid: String = "تم سداد قسط هذا الشهر",
+    val partiallyPaidFormat: String = "مدفوع جزئياً: %s من %s %s",
+    val unpaidDueFormat: String = "مستحق: %s %s (يوم %d)",
+    val payButton: String = "تسجيل سداد",
+    val deleteInstallmentDesc: String = "حذف القسط",
+    val debtPayoffCurve: String = "مسار التخلص من المديونية",
+    val projectedZeroDebt: String = "تناقص الأقساط حتى التصفير التام",
+    val debtFreeLabel: String = "خالي من الديون",
+    val payoffLabel: String = "اكتمال",
+    val noDebtCongrats: String = "تهانينا، لا توجد أقساط أو مديونيات متبقية 🎉",
+    val addFirstPlanPayoff: String = "أضف قسطك الأول لبدء حساب مسار التصفير",
+    val paidSoFarLabel: String = "المسدد حتى الآن",
+
+    // Record Payment Dialog – NEW keys
+    val recordInstallmentPayment: String = "تسجيل سداد القسط",
+    val thisMonthDue: String = "قسط هذا الشهر:",
+    val paidSoFarColon: String = "تم سداده حتى الآن:",
+    val remainingToSettle: String = "المتبقي للاكتمال:",
+    val payFullInstallmentFormat: String = "سداد القسط بالكامل (%s %s)",
+    val customPaymentAmount: String = "أو حدد المبلغ المدفوع (سداد جزئي أو كامل)",
+    val invalidAmountError: String = "يرجى إدخال مبلغ صحيح",
+    val confirmPayment: String = "تأكيد السداد",
+
+    // Dashboard Installments Card – NEW keys
+    val activePlansPayoffTracking: String = "%d خطط نشطة | مسار التصفير التلقائي",
+    val smartDebtTracker: String = "تتبع أقساطك والمديونيات بذكاء",
+    val addFirstPlanDashboard: String = "أضف خطتك الأولى لحساب مسار التصفير ورصد الـ SMS",
+    val dueThisMonthLabel: String = "المتبقي هذا الشهر",
+    val paidAmountFormat: String = "مسدد: %s %s",
+
+    // Quick Presets – NEW keys
+    val quickTapLogTitle: String = "تسجيل سريع بنقرة واحدة ⚡",
+    val customAdd: String = "مخصص +",
+
+    // Splash Screen – NEW keys
+    val splashTagline: String = "مستشارك المالي الذكي ومحفظتك الآمنة",
+    val splashPillOffline: String = "أوفلاين 100%",
+    val splashPillAi: String = "ذكاء مصري",
+    val splashPillBanks: String = "انستاباي وبنوك",
+    val splashEncryptedMessage: String = "مشفر ومحفوظ محلياً على جهازك",
+
+    // App Update – NEW keys
+    val newUpdateAvailable: String = "🚀 تحديث جديد متوفر",
+    val newVersionReady: String = "إصدار جديد متوفر الآن",
+    val currentVersionFormat: String = "الحالي: v%s",
+    val whatsNewTitle: String = "ما الجديد في هذا الإصدار:",
+    val downloadingFormat: String = "جاري التحميل... %d%%",
+    val cancelDownload: String = "إلغاء التحميل",
+    val downloadFinished: String = "تم تحميل التحديث بنجاح! جاهز للتثبيت 📦",
+    val installUpdateNow: String = "تثبيت التحديث الآن 📦",
+    val downloadFailed: String = "تعذر تنزيل التحديث",
+    val browserButton: String = "المتصفح",
+    val retryButton: String = "إعادة المحاولة",
+    val updateDownloadNow: String = "تحديث وتنزيل الآن 🚀",
+    val laterButton: String = "لاحقاً",
+
+    // Bank Hub Updates Section – NEW keys
+    val appUpdatesTitle: String = "التحديثات",
+    val currentVersionLabel: String = "الإصدار الحالي: v%s",
+    val checkingForUpdates: String = "جاري الفحص...",
+    val checkForUpdates: String = "فحص التحديثات الآن",
+    val upToDate: String = "✅ أنت على أحدث إصدار!",
+
     // Analytics Comparison
     val vsLastMonth: String = "مقارنة بالشهر السابق",
     val spendingIncrease: String = "زيادة في الصرف",
     val spendingDecrease: String = "توفير في الصرف"
-) {
-    val isArabic: Boolean
-        get() = currency != "EGP"
-}
+)
 
 val LocalStrings = staticCompositionLocalOf<AppStrings> {
     error("No AppStrings provided. Please provide via CompositionLocalProvider.")

@@ -1,6 +1,8 @@
 package com.example.sayit.presentation.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +49,7 @@ fun PrivacyDisclosureDialog(
     onDecline: () -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     AlertDialog(
         onDismissRequest = onDecline,
@@ -77,7 +79,10 @@ fun PrivacyDisclosureDialog(
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 Text(
                     text = if (isEn) "In accordance with Google Play data protection policies, Say It transparently details how your sensitive data is handled:" else "التزاماً بسياسات Google Play لحماية بياناتك، يوضح تطبيق Say It بشفافية تامة كيفية التعامل مع بياناتك الحساسة:",
                     style = MaterialTheme.typography.bodySmall,
@@ -86,8 +91,14 @@ fun PrivacyDisclosureDialog(
 
                 DisclosureItem(
                     icon = Icons.Default.Storage,
-                    title = if (isEn) "100% Local Storage (Local SQLite)" else "تخزين محلي 100% (Local SQLite)",
-                    description = if (isEn) "All your transactions and budgets are stored locally on your device only. The app has no cloud servers and never transfers data to third parties." else "تُخزن جميع معاملاتك وميزانياتك محلياً داخل جهازك فقط. التطبيق لا يملك خوادم سحابية ولا ينقل بياناتك لأي طرف ثالث."
+                    title = if (isEn) "Local-first storage" else "تخزين محلي أولاً",
+                    description = if (isEn) "Transactions and budgets are stored in a local SQLite database and are excluded from Android backups." else "تُخزن المعاملات والميزانية داخل قاعدة SQLite محلية، وتُستبعد من نسخ Android الاحتياطية."
+                )
+
+                DisclosureItem(
+                    icon = Icons.Default.Security,
+                    title = if (isEn) "Optional cloud AI" else "ذكاء اصطناعي سحابي اختياري",
+                    description = if (isEn) "If you add an AI API key and send a message, relevant financial summaries and recent transactions are sent to the selected AI provider to answer you. Do not enable AI if you prefer to keep all financial data on this device." else "إذا أضفت مفتاح AI وأرسلت رسالة، يُرسل ملخص مالي ومعاملات حديثة مرتبطة بسؤالك إلى مزود الذكاء الاصطناعي المختار للرد عليك. لا تفعّل AI إذا كنت تفضّل بقاء كل بياناتك المالية على الجهاز."
                 )
 
                 DisclosureItem(

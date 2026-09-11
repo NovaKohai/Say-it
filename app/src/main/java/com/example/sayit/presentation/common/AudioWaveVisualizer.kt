@@ -33,15 +33,15 @@ fun AudioWaveVisualizer(
     rmsLevel: Float = 0f,
     modifier: Modifier = Modifier
 ) {
-    val transition = rememberInfiniteTransition(label = "ambient_wave")
+    val allowMotion = motionEnabled()
 
     // Subtle ambient breathing when recording
-    val ambientJitter by transition.animateFloat(
-        initialValue = 0.8f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(tween(350), RepeatMode.Reverse),
-        label = "jitter"
-    )
+    val ambientJitter = if (isRecording && allowMotion) {
+        val transition = rememberInfiniteTransition(label = "recording_wave")
+        val value by transition.animateFloat(0.9f, 1.1f,
+            animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "recording_breath")
+        value
+    } else 1f
 
     // Reactive RMS scaling for real audio levels (rmsLevel ranges 0.0 to 1.0)
     val reactiveMultiplier = if (rmsLevel > 0.05f) {
@@ -52,7 +52,7 @@ fun AudioWaveVisualizer(
 
     val smoothMultiplier by animateFloatAsState(
         targetValue = reactiveMultiplier,
-        animationSpec = spring(stiffness = 500f),
+        animationSpec = tween(120, easing = EmilEasings.StrongEaseOut),
         label = "smooth_rms"
     )
 
@@ -80,7 +80,7 @@ fun AudioWaveVisualizer(
                 1, 5 -> 0.70f
                 else -> 0.55f
             }
-            val scaleFactor = if (isRecording) {
+            val scaleFactor = if (isRecording && allowMotion) {
                 (smoothMultiplier * barFactor).coerceIn(0.2f, 1.8f)
             } else {
                 (8f / base).coerceIn(0.15f, 1f)

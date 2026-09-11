@@ -46,7 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,18 +82,19 @@ fun InstallmentsScreen(
 ) {
     val strings = LocalStrings.current
     val isArabic = strings.isArabic
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var isAddDialogOpen by remember { mutableStateOf(false) }
-    var payingInstallment by remember { mutableStateOf<Installment?>(null) }
-    var deletingInstallmentId by remember { mutableStateOf<String?>(null) }
 
     val numberFormat = remember { NumberFormat.getNumberInstance(Locale.US).apply { maximumFractionDigits = 0 } }
 
     LaunchedEffect(uiState.feedbackMessage) {
         uiState.feedbackMessage?.let { msg ->
-            snackbarHostState.showSnackbar(msg)
+            snackbarHostState.showSnackbar(when (msg) {
+                InstallmentFeedback.ADDED -> strings.installmentAddedFeedback
+                InstallmentFeedback.PAYMENT_RECORDED -> strings.paymentRecordedFeedback
+                InstallmentFeedback.DELETED -> strings.installmentDeletedFeedback
+            })
             viewModel.clearFeedback()
         }
     }
@@ -116,11 +117,12 @@ fun InstallmentsScreen(
                         .padding(end = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
+                    val pressInteraction15 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                    IconButton(interactionSource = pressInteraction15,
                         onClick = onNavigateBack,
                         modifier = Modifier
                             .size(48.dp)
-                            .pressScale(0.92f)
+                            .pressScale(0.92f, interactionSource = pressInteraction15)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -148,17 +150,18 @@ fun InstallmentsScreen(
                     }
                 }
 
-                Button(
-                    onClick = { isAddDialogOpen = true },
+                val pressInteraction16 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                Button(interactionSource = pressInteraction16,
+                    onClick = { viewModel.isAddDialogOpen = true },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Emerald600,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
                     modifier = Modifier
                         .defaultMinSize(minHeight = 48.dp)
-                        .pressScale(0.95f)
+                        .pressScale(0.95f, interactionSource = pressInteraction16)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -199,13 +202,13 @@ fun InstallmentsScreen(
                     // Current Month Summary Card
                     Box(
                         modifier = Modifier
-                            .weight(1f)
+                            .weight(2f)
                             .clip(RoundedCornerShape(20.dp))
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        Emerald500.copy(alpha = 0.30f),
-                                        Color.White.copy(alpha = 0.05f),
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                                         Color.Transparent
                                     )
                                 )
@@ -214,7 +217,7 @@ fun InstallmentsScreen(
                     ) {
                         Card(
                             shape = RoundedCornerShape(19.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
@@ -236,13 +239,12 @@ fun InstallmentsScreen(
                                 val isSettled = uiState.forecast.isCurrentMonthFullySettled
                                 Text(
                                     text = if (isSettled) {
-                                        if (isArabic) "تم سداد الشهر بالكامل" else "Month Fully Settled"
+                                        strings.monthFullySettled
                                     } else {
-                                        if (isArabic) "تم سداد ${numberFormat.format(uiState.forecast.currentMonthPaid)} ${strings.currency}"
-                                        else "Paid ${numberFormat.format(uiState.forecast.currentMonthPaid)} ${strings.currency}"
+                                        String.format(strings.paidAmountFormat, numberFormat.format(uiState.forecast.currentMonthPaid), strings.currency)
                                     },
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        color = if (isSettled) Emerald500 else GoldWarning,
+                                        color = if (isSettled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                 )
@@ -258,8 +260,8 @@ fun InstallmentsScreen(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        CyanAccent.copy(alpha = 0.30f),
-                                        Color.White.copy(alpha = 0.05f),
+                                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.30f),
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                                         Color.Transparent
                                     )
                                 )
@@ -268,7 +270,7 @@ fun InstallmentsScreen(
                     ) {
                         Card(
                             shape = RoundedCornerShape(19.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
@@ -280,10 +282,10 @@ fun InstallmentsScreen(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "${uiState.forecast.activeInstallmentsCount} ${if (isArabic) "خطط" else "plans"}",
+                                    text = "${uiState.forecast.activeInstallmentsCount} ${strings.plansCount}",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = CyanAccent
+                                        color = MaterialTheme.colorScheme.secondary
                                     )
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
@@ -311,10 +313,10 @@ fun InstallmentsScreen(
                         FilterChip(
                             selected = selected,
                             onClick = { viewModel.setFilter(filter) },
-                            label = { Text(if (isArabic) filter.labelAr else filter.labelEn) },
+                            label = { Text(when (filter) { InstallmentFilter.ALL -> strings.all; InstallmentFilter.ACTIVE -> strings.activeInstallments; InstallmentFilter.COMPLETED -> strings.completedInstallments }) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Emerald500.copy(alpha = 0.2f),
-                                selectedLabelColor = Emerald500
+                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                selectedLabelColor = MaterialTheme.colorScheme.primary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -345,8 +347,9 @@ fun InstallmentsScreen(
                         installment = installment,
                         isArabic = isArabic,
                         currency = strings.currency,
-                        onRecordPayment = { payingInstallment = installment },
-                        onDelete = { deletingInstallmentId = installment.id }
+                        onRecordPayment = { viewModel.payingInstallment = installment },
+                        onDelete = { viewModel.deletingInstallmentId = installment.id },
+                        modifier = Modifier.animateItem()
                     )
                 }
             }
@@ -358,39 +361,39 @@ fun InstallmentsScreen(
     }
 
     // Add Installment Dialog
-    if (isAddDialogOpen) {
+    if (viewModel.isAddDialogOpen) {
         AddInstallmentDialog(
-            onDismiss = { isAddDialogOpen = false },
+            onDismiss = { viewModel.isAddDialogOpen = false },
             onSave = { newInst ->
                 viewModel.addInstallment(newInst)
-                isAddDialogOpen = false
+                viewModel.isAddDialogOpen = false
             }
         )
     }
 
     // Record Payment Dialog
-    payingInstallment?.let { inst ->
+    viewModel.payingInstallment?.let { inst ->
         RecordPaymentDialog(
             installment = inst,
-            onDismiss = { payingInstallment = null },
+            onDismiss = { viewModel.payingInstallment = null },
             onConfirmPayment = { id, monthYear, amt ->
                 viewModel.recordPayment(id, monthYear, amt)
-                payingInstallment = null
+                viewModel.payingInstallment = null
             }
         )
     }
 
     // Delete Confirmation Dialog
-    deletingInstallmentId?.let { id ->
+    viewModel.deletingInstallmentId?.let { id ->
         AlertDialog(
-            onDismissRequest = { deletingInstallmentId = null },
+            onDismissRequest = { viewModel.deletingInstallmentId = null },
             title = { Text(strings.deleteInstallmentConfirm) },
             text = { Text(strings.deleteInstallmentMessage) },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteInstallment(id)
-                        deletingInstallmentId = null
+                        viewModel.deletingInstallmentId = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
@@ -398,7 +401,7 @@ fun InstallmentsScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { deletingInstallmentId = null }) {
+                TextButton(onClick = { viewModel.deletingInstallmentId = null }) {
                     Text(strings.cancel)
                 }
             }
@@ -412,8 +415,10 @@ private fun InstallmentItemCard(
     isArabic: Boolean,
     currency: String,
     onRecordPayment: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val strings = LocalStrings.current
     val numberFormat = remember { NumberFormat.getNumberInstance(Locale.US).apply { maximumFractionDigits = 0 } }
 
     val curCal = Calendar.getInstance()
@@ -430,14 +435,14 @@ private fun InstallmentItemCard(
 
     // Double-Bezel luxury enclosure
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(22.dp))
             .background(
                 Brush.linearGradient(
                     listOf(
-                        Color.White.copy(alpha = 0.12f),
-                        Color.White.copy(alpha = 0.04f),
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f),
                         Color.Transparent
                     )
                 )
@@ -447,7 +452,7 @@ private fun InstallmentItemCard(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(21.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -468,14 +473,14 @@ private fun InstallmentItemCard(
                             modifier = Modifier
                                 .size(44.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(CyanAccent.copy(alpha = 0.15f))
-                                .border(1.dp, CyanAccent.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
+                                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f))
+                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CreditCard,
                                 contentDescription = null,
-                                tint = CyanAccent,
+                                tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
@@ -498,15 +503,16 @@ private fun InstallmentItemCard(
                         }
                     }
 
-                    IconButton(
+                    val pressInteraction17 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                    IconButton(interactionSource = pressInteraction17,
                         onClick = onDelete,
                         modifier = Modifier
                             .size(48.dp)
-                            .pressScale(0.92f)
+                            .pressScale(0.92f, interactionSource = pressInteraction17)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = if (isArabic) "حذف القسط" else "Delete Installment",
+                            contentDescription = strings.deleteInstallmentDesc,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                             modifier = Modifier.size(22.dp)
                         )
@@ -522,14 +528,14 @@ private fun InstallmentItemCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "${if (isArabic) "المسدد" else "Paid"}: ${numberFormat.format(installment.totalPaid)} $currency",
+                            text = "${strings.paidLabel}: ${numberFormat.format(installment.totalPaid)} $currency",
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Emerald500,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.SemiBold
                             )
                         )
                         Text(
-                            text = "${if (isArabic) "الإجمالي" else "Total"}: ${numberFormat.format(installment.totalAmount)} $currency",
+                            text = "${strings.totalLabel}: ${numberFormat.format(installment.totalAmount)} $currency",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -542,8 +548,8 @@ private fun InstallmentItemCard(
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(CircleShape),
-                        color = Emerald500,
-                        trackColor = Color.White.copy(alpha = 0.1f),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                     )
                 }
 
@@ -556,17 +562,17 @@ private fun InstallmentItemCard(
                         .clip(RoundedCornerShape(14.dp))
                         .background(
                             when (paymentStatus) {
-                                PaymentStatus.PAID -> Emerald500.copy(alpha = 0.15f)
-                                PaymentStatus.PARTIALLY_PAID -> GoldWarning.copy(alpha = 0.15f)
+                                PaymentStatus.PAID -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                PaymentStatus.PARTIALLY_PAID -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)
                                 PaymentStatus.UNPAID -> MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                             }
                         )
                         .border(
                             1.dp,
                             when (paymentStatus) {
-                                PaymentStatus.PAID -> Emerald500.copy(alpha = 0.35f)
-                                PaymentStatus.PARTIALLY_PAID -> GoldWarning.copy(alpha = 0.35f)
-                                PaymentStatus.UNPAID -> Color.White.copy(alpha = 0.08f)
+                                PaymentStatus.PAID -> MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+                                PaymentStatus.PARTIALLY_PAID -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)
+                                PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                             },
                             RoundedCornerShape(14.dp)
                         )
@@ -589,8 +595,8 @@ private fun InstallmentItemCard(
                                 },
                                 contentDescription = null,
                                 tint = when (paymentStatus) {
-                                    PaymentStatus.PAID -> Emerald500
-                                    PaymentStatus.PARTIALLY_PAID -> GoldWarning
+                                    PaymentStatus.PAID -> MaterialTheme.colorScheme.primary
+                                    PaymentStatus.PARTIALLY_PAID -> MaterialTheme.colorScheme.tertiary
                                     PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurfaceVariant
                                 },
                                 modifier = Modifier.size(20.dp)
@@ -598,23 +604,25 @@ private fun InstallmentItemCard(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = when (paymentStatus) {
-                                    PaymentStatus.PAID -> if (isArabic) "تم سداد قسط هذا الشهر" else "Month installment paid"
-                                    PaymentStatus.PARTIALLY_PAID -> if (isArabic) {
-                                        "مدفوع جزئياً: ${numberFormat.format(paidAmount)} من ${numberFormat.format(dueAmount)} $currency"
-                                    } else {
-                                        "Partially paid: ${numberFormat.format(paidAmount)} / ${numberFormat.format(dueAmount)} $currency"
-                                    }
-                                    PaymentStatus.UNPAID -> if (isArabic) {
-                                        "مستحق: ${numberFormat.format(dueAmount)} $currency (يوم ${installment.dueDayOfMonth})"
-                                    } else {
-                                        "Due: ${numberFormat.format(dueAmount)} $currency (Day ${installment.dueDayOfMonth})"
-                                    }
+                                    PaymentStatus.PAID -> strings.monthInstallmentPaid
+                                    PaymentStatus.PARTIALLY_PAID -> String.format(
+                                        strings.partiallyPaidFormat,
+                                        numberFormat.format(paidAmount),
+                                        numberFormat.format(dueAmount),
+                                        currency
+                                    )
+                                    PaymentStatus.UNPAID -> String.format(
+                                        strings.unpaidDueFormat,
+                                        numberFormat.format(dueAmount),
+                                        currency,
+                                        installment.dueDayOfMonth
+                                    )
                                 },
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     color = when (paymentStatus) {
-                                        PaymentStatus.PAID -> Emerald500
-                                        PaymentStatus.PARTIALLY_PAID -> GoldWarning
+                                        PaymentStatus.PAID -> MaterialTheme.colorScheme.primary
+                                        PaymentStatus.PARTIALLY_PAID -> MaterialTheme.colorScheme.tertiary
                                         PaymentStatus.UNPAID -> MaterialTheme.colorScheme.onSurface
                                     }
                                 )
@@ -622,17 +630,18 @@ private fun InstallmentItemCard(
                         }
 
                         if (paymentStatus != PaymentStatus.PAID) {
-                            OutlinedButton(
+                            val pressInteraction18 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            OutlinedButton(interactionSource = pressInteraction18,
                                 onClick = onRecordPayment,
                                 shape = RoundedCornerShape(10.dp),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = Emerald500
+                                    contentColor = MaterialTheme.colorScheme.primary
                                 ),
-                                modifier = Modifier.pressScale(0.95f)
+                                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction18)
                             ) {
                                 Text(
-                                    text = if (isArabic) "تسجيل سداد" else "Pay",
+                                    text = strings.payButton,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -640,14 +649,14 @@ private fun InstallmentItemCard(
                         } else {
                             Box(
                                 modifier = Modifier
-                                    .background(Emerald500, CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary, CircleShape)
                                     .size(26.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }

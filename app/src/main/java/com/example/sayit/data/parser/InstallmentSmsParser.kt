@@ -1,18 +1,9 @@
 package com.example.sayit.data.parser
 
+import com.example.sayit.domain.model.ParsedInstallmentMessage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
-data class ParsedInstallmentSms(
-    val isDueNotice: Boolean,
-    val isPaymentConfirmation: Boolean,
-    val provider: String,
-    val amount: Double,
-    val dueTimestamp: Long? = null,
-    val monthYearKey: String? = null,
-    val rawMessage: String
-)
 
 object InstallmentSmsParser {
 
@@ -61,7 +52,7 @@ object InstallmentSmsParser {
         return matchesProvider && (matchesPayment || matchesDue)
     }
 
-    fun parse(sender: String, message: String): ParsedInstallmentSms? {
+    fun parse(sender: String, message: String): ParsedInstallmentMessage? {
         val lower = (sender + " " + message).lowercase(Locale.ROOT)
         val isPayment = paymentKeywords.any { lower.contains(it) }
         val isDue = dueKeywords.any { lower.contains(it) }
@@ -74,7 +65,7 @@ object InstallmentSmsParser {
         val dueTimestamp = if (isDue) extractDueDate(message) else null
         val monthYearKey = extractMonthYearKey(message, dueTimestamp)
 
-        return ParsedInstallmentSms(
+        return ParsedInstallmentMessage(
             isDueNotice = isDue && !isPayment,
             isPaymentConfirmation = isPayment,
             provider = provider,

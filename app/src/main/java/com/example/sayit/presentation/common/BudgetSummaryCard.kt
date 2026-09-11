@@ -70,9 +70,9 @@ fun BudgetSummaryCard(
 
     val progressColor by animateColorAsState(
         targetValue = when {
-            forecast.isOverBudget -> RedExpense
-            progress > 0.80f -> GoldWarning
-            else -> Emerald500
+            forecast.isOverBudget -> MaterialTheme.colorScheme.error
+            progress > 0.80f -> MaterialTheme.colorScheme.tertiary
+            else -> MaterialTheme.colorScheme.primary
         },
         label = "progressColor"
     )
@@ -85,8 +85,8 @@ fun BudgetSummaryCard(
             .background(
                 Brush.linearGradient(
                     listOf(
-                        Emerald500.copy(alpha = 0.35f),
-                        CyanAccent.copy(alpha = 0.20f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.20f),
                         Color.Transparent
                     )
                 )
@@ -97,7 +97,7 @@ fun BudgetSummaryCard(
         Card(
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF0F172A)
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -115,8 +115,8 @@ fun BudgetSummaryCard(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Emerald500.copy(alpha = 0.15f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -124,7 +124,7 @@ fun BudgetSummaryCard(
                                     modifier = Modifier
                                         .size(7.dp)
                                         .clip(CircleShape)
-                                        .background(Emerald300)
+                                        .background(MaterialTheme.colorScheme.primary)
                                 )
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Text(
@@ -134,7 +134,7 @@ fun BudgetSummaryCard(
                                         fontSize = 13.sp,
                                         letterSpacing = 0.sp
                                     ),
-                                    color = Emerald300
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -147,15 +147,15 @@ fun BudgetSummaryCard(
                             .size(56.dp)
                             .clip(CircleShape)
                             .background(
-                                Brush.linearGradient(listOf(Emerald500.copy(alpha = 0.2f), CyanAccent.copy(alpha = 0.2f)))
+                                Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)))
                             )
-                            .border(1.dp, Emerald500.copy(alpha = 0.3f), CircleShape),
+                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
 Icon(
                                 imageVector = Icons.Default.Tune,
                                 contentDescription = strings.dailyBurnRate,
-                                tint = Emerald300,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(28.dp)
                             )
                     }
@@ -168,7 +168,7 @@ Icon(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         ),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
 
@@ -177,7 +177,7 @@ Icon(
                     Text(
                         text = strings.startSetBudgetDesc,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.65f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )
@@ -187,19 +187,20 @@ Icon(
                         Text(
                             text = "${strings.totalSpentLabel} ${forecast.totalSpent.toInt()} ${strings.currency}",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = CyanAccent
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
 
                     Spacer(modifier = Modifier.height(18.dp))
 
-                    Button(
+                    val pressInteraction7 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                    Button(interactionSource = pressInteraction7,
                         onClick = onEditBudgetClick,
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .pressScale(0.96f)
+                            .pressScale(0.96f, interactionSource = pressInteraction7)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -225,8 +226,8 @@ Icon(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Emerald500.copy(alpha = 0.15f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -234,7 +235,7 @@ Icon(
                                     modifier = Modifier
                                         .size(7.dp)
                                         .clip(CircleShape)
-                                        .background(Emerald300)
+                                        .background(MaterialTheme.colorScheme.primary)
                                 )
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Text(
@@ -244,7 +245,7 @@ Icon(
                                         fontSize = 13.sp,
                                         letterSpacing = 0.sp
                                     ),
-                                    color = Emerald300
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -256,11 +257,11 @@ Icon(
                             // Financial Health Score Pill
                             val score = forecast.healthScore
                             val scoreColor = when {
-                                score >= 80 -> Emerald300
-                                score >= 60 -> CyanAccent
-                                else -> RedExpense
+                                score >= 80 -> MaterialTheme.colorScheme.primary
+                                score >= 60 -> MaterialTheme.colorScheme.secondary
+                                else -> MaterialTheme.colorScheme.error
                             }
-                            val isEn = strings.currency == "EGP"
+                            val isEn = !strings.isArabic
                             val scoreLabel = if (isEn) "Score: $score/100" else "$score/100 صحة مالية"
 
                             Box(
@@ -286,14 +287,14 @@ Icon(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.08f))
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                                     .pressScale(targetScale = 0.90f, onClick = onEditBudgetClick),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
                                     contentDescription = strings.edit,
-                                    tint = Color.White.copy(alpha = 0.8f),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -313,14 +314,14 @@ Icon(
                                 fontSize = 38.sp,
                                 letterSpacing = (-0.5).sp
                             ),
-                            color = if (forecast.isOverBudget) RedExpense else Color.White,
+                            color = if (forecast.isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Black
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = strings.remainingCurrency,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             modifier = Modifier.padding(bottom = 6.dp)
                         )
                     }
@@ -335,7 +336,7 @@ Icon(
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
                         color = progressColor,
-                        trackColor = Color.White.copy(alpha = 0.1f)
+                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -348,12 +349,12 @@ Icon(
                         Text(
                             text = "${strings.spent} ${forecast.totalSpent.toInt()} ${strings.currency}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                         Text(
                             text = "${strings.budgetCap} ${forecast.monthlyBudget.toInt()} ${strings.currency}",
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White.copy(alpha = 0.85f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                         )
                     }
 
@@ -369,7 +370,7 @@ Icon(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White.copy(alpha = 0.05f))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
                                 .pressScale(0.96f)
                                 .padding(horizontal = 10.dp, vertical = 8.dp)
                         ) {
@@ -377,7 +378,7 @@ Icon(
                                 Icon(
                                     imageVector = Icons.Default.LocalFireDepartment,
                                     contentDescription = null,
-                                    tint = GoldWarning,
+                                    tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -385,12 +386,12 @@ Icon(
                                     Text(
                                         text = strings.dailyBurnRate,
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                        color = Color.White.copy(alpha = 0.5f)
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                     )
                                     Text(
                                         text = "${forecast.dailyBurnRate.toInt()} ${strings.perDay}",
                                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = Color.White
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -401,7 +402,7 @@ Icon(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White.copy(alpha = 0.05f))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
                                 .pressScale(0.96f)
                                 .padding(horizontal = 10.dp, vertical = 8.dp)
                         ) {
@@ -409,7 +410,7 @@ Icon(
                                 Icon(
                                     imageVector = Icons.Default.HourglassEmpty,
                                     contentDescription = null,
-                                    tint = CyanAccent,
+                                    tint = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -417,13 +418,13 @@ Icon(
                                     Text(
                                         text = strings.depletionDate,
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                        color = Color.White.copy(alpha = 0.5f)
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                     )
-                                    val depletionStr = if (strings.currency == "EGP") forecast.depletionDateEn else forecast.depletionDateAr
+                                    val depletionStr = if (!strings.isArabic) forecast.depletionDateEn else forecast.depletionDateAr
                                     Text(
                                         text = depletionStr,
                                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                        color = Color.White
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }

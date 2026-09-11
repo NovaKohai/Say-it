@@ -3,6 +3,7 @@ package com.example.sayit.presentation.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,8 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -60,7 +64,7 @@ fun EditTransactionDialog(
     onUpdateTransaction: (Transaction) -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     val initialAmount = if (transaction.amount % 1.0 == 0.0) {
         transaction.amount.toInt().toString()
@@ -125,14 +129,19 @@ fun EditTransactionDialog(
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(if (isExpense) RedExpense else MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable { selectedType = TransactionType.EXPENSE }
+                            .heightIn(min = 48.dp)
+                            .selectable(
+                                selected = isExpense,
+                                role = Role.RadioButton,
+                                onClick = { selectedType = TransactionType.EXPENSE }
+                            )
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = strings.expenseType,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = if (isExpense) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (isExpense) Color(0xFF0F172A) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -141,14 +150,19 @@ fun EditTransactionDialog(
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(if (!isExpense) GreenIncome else MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable { selectedType = TransactionType.INCOME }
+                            .heightIn(min = 48.dp)
+                            .selectable(
+                                selected = !isExpense,
+                                role = Role.RadioButton,
+                                onClick = { selectedType = TransactionType.INCOME }
+                            )
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = strings.incomeType,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = if (!isExpense) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (!isExpense) Color(0xFF0F172A) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -196,6 +210,7 @@ fun EditTransactionDialog(
                     items(categories) { cat ->
                         val isSelected = selectedCategoryId == cat.id
                         val catColor = Color(cat.colorHex)
+                        val selectedContentColor = if (catColor.luminance() > 0.42f) Color(0xFF0F172A) else Color.White
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
@@ -203,21 +218,26 @@ fun EditTransactionDialog(
                                     if (isSelected) catColor
                                     else MaterialTheme.colorScheme.surfaceVariant
                                 )
-                                .clickable { selectedCategoryId = cat.id }
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = isSelected,
+                                    role = Role.RadioButton,
+                                    onClick = { selectedCategoryId = cat.id }
+                                )
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = getCategoryIcon(cat.iconName),
                                     contentDescription = null,
-                                    tint = if (isSelected) Color.White else catColor,
+                                    tint = if (isSelected) selectedContentColor else catColor,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = if (isEn) cat.nameEn else cat.nameAr,
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                    color = if (isSelected) selectedContentColor else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -240,7 +260,12 @@ fun EditTransactionDialog(
                                     if (isSelected) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant
                                 )
-                                .clickable { selectedSource = source }
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = isSelected,
+                                    role = Role.RadioButton,
+                                    onClick = { selectedSource = source }
+                                )
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             Text(
@@ -254,7 +279,8 @@ fun EditTransactionDialog(
             }
         },
         confirmButton = {
-            Button(
+            val pressInteraction10 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            Button(interactionSource = pressInteraction10,
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     if (amount > 0 && merchantText.isNotBlank()) {
@@ -277,7 +303,7 @@ fun EditTransactionDialog(
                 enabled = (amountText.toDoubleOrNull() ?: 0.0) > 0 && merchantText.isNotBlank(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction10)
             ) {
                 Icon(Icons.Default.Check, contentDescription = strings.save, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
@@ -285,9 +311,10 @@ fun EditTransactionDialog(
             }
         },
         dismissButton = {
-            TextButton(
+            val pressInteraction11 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            TextButton(interactionSource = pressInteraction11,
                 onClick = onDismiss,
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction11)
             ) {
                 Text(strings.cancel)
             }

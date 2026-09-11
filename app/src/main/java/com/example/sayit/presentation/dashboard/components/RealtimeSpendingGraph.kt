@@ -1,6 +1,8 @@
 package com.example.sayit.presentation.dashboard.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +54,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import com.example.sayit.core.localization.AppLanguage
 import com.example.sayit.domain.model.Transaction
 import com.example.sayit.presentation.common.EmilEasings
+import com.example.sayit.presentation.common.motionEnabled
 import com.example.sayit.domain.model.TransactionType
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
@@ -98,28 +104,82 @@ fun RealtimeSpendingGraph(
     val avgSpent = remember(spendingPoints) {
         if (spendingPoints.isNotEmpty()) totalSpent / spendingPoints.size else 0.0
     }
+    val chartDescription = remember(spendingPoints, totalSpent, maxSpentPoint, currency, isEn) {
+        if (isEn) {
+            "Spending chart. Total ${totalSpent.toInt()} $currency across ${spendingPoints.size} days. " +
+                (maxSpentPoint?.let { "Highest day ${it.fullDateLabel}: ${it.amount.toInt()} $currency." } ?: "No spending in this period.")
+        } else {
+            "رسم المصروفات. الإجمالي ${totalSpent.toInt()} $currency خلال ${spendingPoints.size} أيام. " +
+                (maxSpentPoint?.let { "أعلى يوم ${it.fullDateLabel}: ${it.amount.toInt()} $currency." } ?: "لا توجد مصروفات في هذه الفترة.")
+        }
+    }
 
     // Interactive point selection
+    val allowMotion = motionEnabled()
     var selectedIndex by remember(spendingPoints) { mutableIntStateOf(-1) }
 
-    // Live breathing animation for the live pulse dot
-    val infiniteTransition = rememberInfiniteTransition(label = "live_pulse")
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.35f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1100, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulse_alpha"
-    )
+    // 1. Entrance / data-change elevation wave (smoothly rises from baseline)
+    val graphProgress = remember { Animatable(if (allowMotion) 0f else 1f) }
+    LaunchedEffect(spendingPoints, allowMotion) {
+        if (allowMotion) {
+            graphProgress.snapTo(0f)
+            graphProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 900,
+                    easing = EmilEasings.StrongEaseOut
+                )
+            )
+        } else {
+            graphProgress.snapTo(1f)
+        }
+    }
+    val animatedProgress = graphProgress.value
 
-    // Chart entrance animation (snappy sub-300ms curve)
-    val animatedProgress by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(280, easing = EmilEasings.StrongEaseOut),
-        label = "graph_draw"
-    )
+    // 2. Continuous ambient breathing pulse for the LIVE badge and endpoint bead
+    val infiniteTransition = rememberInfiniteTransition(label = "graphAmbient")
+    val pulseAlpha by if (allowMotion) {
+        infiniteTransition.animateFloat(
+            initialValue = 0.35f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "pulseAlpha"
+        )
+    } else {
+        remember { mutableStateOf(1f) }
+    }
+
+    val pulseRadiusScale by if (allowMotion) {
+        infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.45f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "pulseRadius"
+        )
+    } else {
+        remember { mutableStateOf(1f) }
+    }
+
+    // 3. Flowing gradient along the curve line
+    val shimmerOffset by if (allowMotion) {
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2800, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "shimmerOffset"
+        )
+    } else {
+        remember { mutableStateOf(0f) }
+    }
 
     Card(
         shape = RoundedCornerShape(22.dp),
@@ -173,7 +233,7 @@ fun RealtimeSpendingGraph(
                         )
                         Text(
                             text = if (isEn) "Live daily outflow activity" else "معدل الصرف اليومي المباشر",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -202,7 +262,7 @@ fun RealtimeSpendingGraph(
                             text = if (isEn) "LIVE" else "تحديث لحظي",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
-                                fontSize = 11.5.sp,
+                                fontSize = 12.sp,
                                 letterSpacing = 0.sp
                             ),
                             color = Emerald500
@@ -337,6 +397,7 @@ fun RealtimeSpendingGraph(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
+                    .semantics { contentDescription = chartDescription }
                     .pointerInput(spendingPoints) {
                         detectTapGestures { offset ->
                             val width = size.width
@@ -413,23 +474,31 @@ fun RealtimeSpendingGraph(
                     fillPath.lineTo(coords.last().x, height)
                     fillPath.close()
 
-                    // Draw Area Gradient Fill
+                    // Draw Area Gradient Fill (fading in and rising with progress)
                     drawPath(
                         path = fillPath,
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Emerald500.copy(alpha = 0.32f),
-                                CyanAccent.copy(alpha = 0.08f),
+                                Emerald500.copy(alpha = 0.30f * animatedProgress),
+                                CyanAccent.copy(alpha = 0.08f * animatedProgress),
                                 Color.Transparent
                             )
                         )
                     )
 
-                    // Draw Main Curve Line Stroke
+                    // Draw Main Curve Line Stroke with ambient flowing gradient
+                    val lineColors = if (allowMotion) {
+                        listOf(Emerald500, CyanAccent, Emerald600, Emerald500)
+                    } else {
+                        listOf(Emerald500, CyanAccent)
+                    }
+                    val gradientStartX = width * shimmerOffset
                     drawPath(
                         path = curvePath,
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(Emerald500, CyanAccent)
+                        brush = Brush.linearGradient(
+                            colors = lineColors,
+                            start = Offset(gradientStartX, 0f),
+                            end = Offset(gradientStartX + width, 0f)
                         ),
                         style = Stroke(
                             width = 3.dp.toPx(),
@@ -470,17 +539,25 @@ fun RealtimeSpendingGraph(
                                 center = offset
                             )
                         } else if (isLast) {
-                            // Subtle breathing pulse for latest point
+                            // Radar wave ring radiating outwards
                             drawCircle(
-                                color = Emerald500.copy(alpha = 0.25f * pulseAlpha),
-                                radius = 8.dp.toPx(),
+                                color = CyanAccent.copy(alpha = 0.28f * pulseAlpha),
+                                radius = 9.dp.toPx() * pulseRadiusScale,
                                 center = offset
                             )
+                            // Subtle breathing halo for latest point
+                            drawCircle(
+                                color = Emerald500.copy(alpha = 0.35f * pulseAlpha),
+                                radius = 6.dp.toPx(),
+                                center = offset
+                            )
+                            // Outer circle
                             drawCircle(
                                 color = Emerald500,
                                 radius = 4.dp.toPx(),
                                 center = offset
                             )
+                            // Inner crisp core
                             drawCircle(
                                 color = Color.White,
                                 radius = 2.dp.toPx(),

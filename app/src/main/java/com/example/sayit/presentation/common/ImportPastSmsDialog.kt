@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,7 +57,7 @@ fun ImportPastSmsDialog(
     onConfirmImport: (List<Transaction>) -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     var selectedLimit by remember { mutableIntStateOf(50) }
     val limitOptions = listOf(
@@ -150,8 +149,8 @@ fun ImportPastSmsDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator(color = Emerald500)
-                            Spacer(modifier = Modifier.height(12.dp))
+                            FintechLoadingSpinner(size = 40.dp, strokeWidth = 3.5.dp)
+                            Spacer(modifier = Modifier.height(14.dp))
                             Text(
                                 text = if (isEn) "Reading & filtering bank SMS..." else "جاري قراءة وتصفية رسائل البنوك...",
                                 style = MaterialTheme.typography.bodyMedium,

@@ -18,8 +18,10 @@ class SayItPreferences(context: Context) {
         set(value) = prefs.edit().putString(KEY_ACTIVE_TIME_PERIOD, value).apply()
 
     var isPrivacyDisclosureAccepted: Boolean
-        get() = prefs.getBoolean(KEY_PRIVACY_DISCLOSURE, false)
-        set(value) = prefs.edit().putBoolean(KEY_PRIVACY_DISCLOSURE, value).apply()
+        get() = prefs.getInt(KEY_PRIVACY_DISCLOSURE_VERSION, 0) >= CURRENT_PRIVACY_DISCLOSURE_VERSION
+        set(value) = prefs.edit()
+            .putInt(KEY_PRIVACY_DISCLOSURE_VERSION, if (value) CURRENT_PRIVACY_DISCLOSURE_VERSION else 0)
+            .apply()
 
     var appLanguage: AppLanguage
         get() {
@@ -73,7 +75,8 @@ class SayItPreferences(context: Context) {
         private const val KEY_LAST_UPDATE_CHECK_TIME = "last_update_check_time"
         private const val KEY_MONTHLY_BUDGET = "monthly_budget"
         private const val KEY_ACTIVE_TIME_PERIOD = "active_time_period"
-        private const val KEY_PRIVACY_DISCLOSURE = "privacy_disclosure_accepted"
+        private const val KEY_PRIVACY_DISCLOSURE_VERSION = "privacy_disclosure_version"
+        private const val CURRENT_PRIVACY_DISCLOSURE_VERSION = 2
         private const val KEY_APP_LANGUAGE = "app_language"
         private const val KEY_GEMINI_API_KEY = "gemini_api_key"
         private const val KEY_AI_MODEL = "ai_model"

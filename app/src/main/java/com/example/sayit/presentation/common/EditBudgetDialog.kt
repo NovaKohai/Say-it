@@ -43,7 +43,7 @@ fun EditBudgetDialog(
     onConfirm: (Double) -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     var budgetInput by remember { mutableStateOf(if (currentBudget > 0) currentBudget.toInt().toString() else "") }
     val presets = listOf(5000.0, 10000.0, 15000.0, 20000.0, 30000.0)
@@ -111,7 +111,8 @@ fun EditBudgetDialog(
             }
         },
         confirmButton = {
-            Button(
+            val pressInteraction8 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            Button(interactionSource = pressInteraction8,
                 onClick = {
                     val amount = budgetInput.toDoubleOrNull() ?: currentBudget
                     if (amount > 0) {
@@ -120,15 +121,16 @@ fun EditBudgetDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction8)
             ) {
                 Text(strings.save)
             }
         },
         dismissButton = {
-            TextButton(
+            val pressInteraction9 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            TextButton(interactionSource = pressInteraction9,
                 onClick = onDismiss,
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction9)
             ) {
                 Text(strings.cancel)
             }

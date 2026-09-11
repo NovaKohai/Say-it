@@ -72,66 +72,71 @@ fun SplashScreen(
     onSplashFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val strings = com.example.sayit.core.localization.LocalStrings.current
+    val allowMotion = com.example.sayit.presentation.common.motionEnabled()
+    val onFinished by androidx.compose.runtime.rememberUpdatedState(onSplashFinished)
     // Start animation trigger
     var startAnimation by remember { androidx.compose.runtime.mutableStateOf(false) }
     val progress = remember { Animatable(0f) }
 
-    // Ambient pulse aura (defers reading to draw phase)
-    val infiniteTransition = rememberInfiniteTransition(label = "ambient_aura")
-    val auraScale by infiniteTransition.animateFloat(
-        initialValue = 0.92f,
-        targetValue = 1.14f,
+    val auraTransition = rememberInfiniteTransition(label = "auraBreath")
+    val auraScale by auraTransition.animateFloat(
+        initialValue = 0.96f,
+        targetValue = if (allowMotion) 1.10f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(1400, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "aura_scale"
+        label = "auraScale"
     )
-    val auraAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.25f,
-        targetValue = 0.55f,
+    val auraAlpha by auraTransition.animateFloat(
+        initialValue = 0.22f,
+        targetValue = if (allowMotion) 0.38f else 0.28f,
         animationSpec = infiniteRepeatable(
             animation = tween(1400, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "aura_alpha"
+        label = "auraAlpha"
     )
 
     // Entrance Spring Animations
     val logoScale by animateFloatAsState(
-        targetValue = if (startAnimation) 1.0f else 0.5f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
+        targetValue = if (startAnimation || !allowMotion) 1f else 0.88f,
+        animationSpec = tween(450, easing = com.example.sayit.presentation.common.EmilEasings.StrongEaseOut),
         label = "logo_scale"
     )
 
     val contentAlpha by animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0f,
-        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing),
+        targetValue = if (startAnimation || !allowMotion) 1f else 0f,
+        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing),
         label = "content_alpha"
     )
 
     val slideUpOffset by animateFloatAsState(
-        targetValue = if (startAnimation) 0f else 40f,
+        targetValue = if (startAnimation || !allowMotion) 0f else 14f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioNoBouncy,
-            stiffness = Spring.StiffnessMediumLow
+            stiffness = Spring.StiffnessLow
         ),
         label = "slide_up"
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(allowMotion) {
+        if (!allowMotion) {
+            startAnimation = true
+            progress.snapTo(1f)
+            delay(1000L)
+            onFinished()
+            return@LaunchedEffect
+        }
         startAnimation = true
-        // Animate loading progress bar smoothly
+        // Animate loading progress bar smoothly across 1850ms so user can comfortably view it
         progress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1100, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 1850, easing = FastOutSlowInEasing)
         )
-        // Brief pause to appreciate 100% completion
-        delay(220)
-        onSplashFinished()
+        delay(350L)
+        onFinished()
     }
 
     Box(
@@ -140,9 +145,9 @@ fun SplashScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF060911),
-                        Color(0xFF090D16),
-                        Color(0xFF0B1324)
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        MaterialTheme.colorScheme.surface
                     )
                 )
             )
@@ -167,8 +172,8 @@ fun SplashScreen(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Emerald500.copy(alpha = 0.25f),
-                            CyanAccent.copy(alpha = 0.12f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                             Color.Transparent
                         )
                     )
@@ -199,8 +204,8 @@ fun SplashScreen(
                     modifier = Modifier
                         .size(108.dp)
                         .clip(CircleShape)
-                        .background(Emerald500.copy(alpha = 0.12f))
-                        .border(1.5.dp, Brush.linearGradient(listOf(Emerald500.copy(alpha = 0.4f), CyanAccent.copy(alpha = 0.3f))), CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                        .border(1.5.dp, Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))), CircleShape)
                 )
 
                 // Middle Gradient Container
@@ -210,17 +215,17 @@ fun SplashScreen(
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
-                                colors = listOf(Emerald600, Emerald500, CyanAccent)
+                                colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
                             )
                         )
-                        .border(1.dp, Color.White.copy(alpha = 0.35f), CircleShape),
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     // Center Voice & FinTech Icon
                     Icon(
                         imageVector = Icons.Default.Mic,
                         contentDescription = "Say It Logo",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(44.dp)
                     )
                 }
@@ -231,14 +236,14 @@ fun SplashScreen(
                         .align(Alignment.TopEnd)
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF0F172A))
-                        .border(1.dp, Emerald300, CircleShape),
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
                         contentDescription = null,
-                        tint = Emerald300,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -254,7 +259,7 @@ fun SplashScreen(
                     fontSize = 38.sp,
                     letterSpacing = 0.sp
                 ),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.graphicsLayer {
                     alpha = contentAlpha
                     translationY = slideUpOffset
@@ -265,13 +270,13 @@ fun SplashScreen(
 
             // Cultural Tagline
             Text(
-                text = if (isArabic) "مستشارك المالي الذكي ومحفظتك الآمنة" else "Your Smart AI Financial Copilot",
+                text = strings.splashTagline,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     letterSpacing = 0.sp
                 ),
-                color = Color.White.copy(alpha = 0.75f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.graphicsLayer {
                     alpha = contentAlpha
@@ -292,15 +297,15 @@ fun SplashScreen(
             ) {
                 SplashFeaturePill(
                     icon = Icons.Default.Shield,
-                    label = if (isArabic) "أوفلاين 100%" else "100% Offline"
+                    label = strings.splashPillOffline
                 )
                 SplashFeaturePill(
                     icon = Icons.Default.AutoAwesome,
-                    label = if (isArabic) "ذكاء مصري" else "Smart AI"
+                    label = strings.splashPillAi
                 )
                 SplashFeaturePill(
                     icon = Icons.Default.Wallet,
-                    label = if (isArabic) "انستاباي وبنوك" else "Bank SMS"
+                    label = strings.splashPillBanks
                 )
             }
         }
@@ -314,13 +319,32 @@ fun SplashScreen(
                 .graphicsLayer { alpha = contentAlpha },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val currentPhase = when {
+                progress.value < 0.30f -> if (isArabic) "جاري تهيئة المحفظة الذكية..." else "Initializing local vault..."
+                progress.value < 0.65f -> if (isArabic) "تأمين وتشفير البيانات محلياً..." else "Securing financial data..."
+                progress.value < 0.92f -> if (isArabic) "تحميل لوحة التحكم المالية..." else "Loading financial insights..."
+                else -> if (isArabic) "جاهز للاستخدام ✓" else "Ready to use ✓"
+            }
+
+            Text(
+                text = currentPhase,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.sp
+                ),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             // Elegant Smooth Progress Bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.55f)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color.White.copy(alpha = 0.12f))
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
             ) {
                 Box(
                     modifier = Modifier
@@ -329,7 +353,7 @@ fun SplashScreen(
                         .clip(RoundedCornerShape(2.dp))
                         .background(
                             Brush.horizontalGradient(
-                                listOf(Emerald500, CyanAccent)
+                                listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
                             )
                         )
                 )
@@ -344,19 +368,30 @@ fun SplashScreen(
                 Icon(
                     imageVector = Icons.Default.Security,
                     contentDescription = null,
-                    tint = Emerald300.copy(alpha = 0.8f),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
-                    text = if (isArabic) "مشفر ومحفوظ محلياً على جهازك" else "Encrypted & stored privately on-device",
+                    text = strings.splashEncryptedMessage,
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.Medium,
                         letterSpacing = 0.sp
                     ),
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = if (isArabic) "اضغط في أي مكان للمتابعة فوراً" else "Tap anywhere to continue",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Normal
+                ),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+            )
         }
     }
 }
@@ -369,8 +404,8 @@ private fun SplashFeaturePill(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.White.copy(alpha = 0.06f))
-            .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
             .padding(horizontal = 9.dp, vertical = 5.dp)
     ) {
         Row(
@@ -380,7 +415,7 @@ private fun SplashFeaturePill(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Emerald300,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(12.dp)
             )
             Text(
@@ -390,7 +425,7 @@ private fun SplashFeaturePill(
                     fontSize = 11.sp,
                     letterSpacing = 0.sp
                 ),
-                color = Color.White.copy(alpha = 0.85f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
             )
         }
     }

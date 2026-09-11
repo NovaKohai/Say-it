@@ -1,9 +1,9 @@
 package com.example.sayit.domain.usecase
 
-import com.example.sayit.data.parser.InstallmentSmsParser
 import com.example.sayit.domain.model.Installment
 import com.example.sayit.domain.model.InstallmentPayoffForecast
 import com.example.sayit.domain.model.MonthlyInstallmentRecord
+import com.example.sayit.domain.model.ParsedInstallmentMessage
 import com.example.sayit.domain.repository.InstallmentRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -39,9 +39,7 @@ class DeleteInstallmentUseCase(private val repository: InstallmentRepository) {
 }
 
 class ProcessInstallmentSmsUseCase(private val repository: InstallmentRepository) {
-    suspend operator fun invoke(sender: String, message: String, timestamp: Long = System.currentTimeMillis()): Boolean {
-        val parsed = InstallmentSmsParser.parse(sender, message) ?: return false
-
+    suspend operator fun invoke(parsed: ParsedInstallmentMessage, timestamp: Long = System.currentTimeMillis()): Boolean {
         return if (parsed.isPaymentConfirmation) {
             repository.recordSmsPayment(parsed.provider, parsed.amount, timestamp)
         } else if (parsed.isDueNotice) {

@@ -25,6 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +57,7 @@ fun TransactionDetailDialog(
     onEdit: (Transaction) -> Unit = {}
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
     val isExpense = transaction.type == TransactionType.EXPENSE
     val amountColor = if (isExpense) RedExpense else GreenIncome
     val prefix = if (isExpense) "-" else "+"
@@ -63,6 +67,7 @@ fun TransactionDetailDialog(
     val sourceTitle = if (isEn) transaction.source.labelEn else transaction.source.labelAr
     val paymentTitle = if (isEn) transaction.paymentSource.titleEn else transaction.paymentSource.titleAr
     val categoryName = if (isEn) (transaction.category?.nameEn ?: "General") else (transaction.category?.nameAr ?: "عام")
+    var isDeleteConfirmationOpen by remember(transaction.id) { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -149,44 +154,71 @@ fun TransactionDetailDialog(
         },
         confirmButton = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
+                val pressInteraction12 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                Button(interactionSource = pressInteraction12,
                     onClick = {
                         onEdit(transaction)
                         onDismiss()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.pressScale(0.95f)
+                    modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction12)
                 ) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(strings.edit)
                 }
 
-                Button(
-                    onClick = {
-                        onDelete(transaction.id)
-                        onDismiss()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = RedExpense),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.pressScale(0.95f)
+                TextButton(
+                    onClick = { isDeleteConfirmationOpen = true },
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = RedExpense, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(strings.delete)
+                    Text(strings.delete, color = RedExpense)
                 }
             }
         },
         dismissButton = {
-            TextButton(
+            val pressInteraction14 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            TextButton(interactionSource = pressInteraction14,
                 onClick = onDismiss,
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction14)
             ) {
                 Text(strings.close)
             }
         }
     )
+
+    if (isDeleteConfirmationOpen) {
+        AlertDialog(
+            onDismissRequest = { isDeleteConfirmationOpen = false },
+            title = { Text(if (isEn) "Delete this transaction?" else "حذف هذه المعاملة؟") },
+            text = {
+                Text(
+                    if (isEn) "${transaction.merchant} • ${transaction.amount.toInt()} ${strings.currency} will be permanently removed."
+                    else "سيتم حذف ${transaction.merchant} • ${transaction.amount.toInt()} ${strings.currency} نهائياً."
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDelete(transaction.id)
+                        isDeleteConfirmationOpen = false
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(strings.delete)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isDeleteConfirmationOpen = false }) {
+                    Text(strings.cancel)
+                }
+            }
+        )
+    }
 }
 
 @Composable

@@ -29,7 +29,7 @@ import com.example.sayit.presentation.main.MainFintechScreen
 import com.example.sayit.theme.SayItTheme
 
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val uiState by viewModel.uiState.collectAsState()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val strings = if (uiState.language == AppLanguage.EN) EnglishStrings else ArabicStrings
             val layoutDir = uiState.language.layoutDirection
 
@@ -75,6 +75,12 @@ class MainActivity : ComponentActivity() {
                 LocalLayoutDirection provides layoutDir
             ) {
                 SayItTheme(darkTheme = uiState.isDarkMode) {
+                    androidx.compose.runtime.SideEffect {
+                        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
+                            isAppearanceLightStatusBars = !uiState.isDarkMode
+                            isAppearanceLightNavigationBars = !uiState.isDarkMode
+                        }
+                    }
                     var showDisclosure by remember { mutableStateOf(!alreadyAccepted) }
                     var showSplash by remember { mutableStateOf(true) }
 
@@ -83,7 +89,7 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            MainFintechScreen(viewModel = viewModel)
+                            MainFintechScreen(viewModel = viewModel, prefs = prefs)
 
                             if (showDisclosure && !showSplash) {
                                 PrivacyDisclosureDialog(
@@ -101,7 +107,7 @@ class MainActivity : ComponentActivity() {
                             AnimatedVisibility(
                                 visible = showSplash,
                                 enter = androidx.compose.animation.fadeIn(),
-                                exit = fadeOut(animationSpec = tween(durationMillis = 400))
+                                exit = fadeOut(animationSpec = tween(durationMillis = 300, easing = com.example.sayit.presentation.common.EmilEasings.StrongEaseOut))
                             ) {
                                 SplashScreen(
                                     isArabic = uiState.language == AppLanguage.AR,

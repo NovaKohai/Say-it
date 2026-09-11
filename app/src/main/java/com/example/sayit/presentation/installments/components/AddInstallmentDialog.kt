@@ -90,7 +90,7 @@ fun AddInstallmentDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isArabic) "إضافة خطة تقسيط جديدة" else "Add New Installment Plan",
+                        text = strings.uiAddNewInstallmentPlan,
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -114,7 +114,7 @@ fun AddInstallmentDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it; errorMessage = null },
-                    label = { Text(if (isArabic) "اسم القسط / الغرض (مثال: هاتف جديد، سيارة)" else "Item / Installment Name") },
+                    label = { Text(strings.uiItemInstallmentName) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
@@ -233,7 +233,7 @@ fun AddInstallmentDialog(
                     OutlinedTextField(
                         value = dueDayStr,
                         onValueChange = { dueDayStr = it },
-                        label = { Text(if (isArabic) "يوم الاستحقاق" else "Due Day") },
+                        label = { Text(strings.uiDueDay) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(0.8f),
@@ -247,7 +247,7 @@ fun AddInstallmentDialog(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text(if (isArabic) "ملاحظات إضافية (اختياري)" else "Notes (Optional)") },
+                    label = { Text(strings.uiNotesOptional) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
@@ -281,15 +281,15 @@ fun AddInstallmentDialog(
                             val dueDay = dueDayStr.toIntOrNull() ?: 1
 
                             if (name.isBlank()) {
-                                errorMessage = if (isArabic) "يرجى كتابة اسم القسط" else "Please enter installment name"
+                                errorMessage = strings.uiPleaseEnterInstallmentName
                                 return@Button
                             }
                             if (monthly <= 0) {
-                                errorMessage = if (isArabic) "يرجى تحديد القسط الشهري بشكل صحيح" else "Please enter a valid monthly amount"
+                                errorMessage = strings.uiPleaseEnterAValidMonthlyAmount
                                 return@Button
                             }
                             if (months <= 0) {
-                                errorMessage = if (isArabic) "يرجى تحديد عدد الشهور" else "Please enter months duration"
+                                errorMessage = strings.uiPleaseEnterMonthsDuration
                                 return@Button
                             }
 
@@ -320,12 +320,12 @@ fun AddInstallmentDialog(
                             onSave(newInstallment)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Emerald500,
-                            contentColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(14.dp)
                     ) {
-                        Text(if (isArabic) "حفظ الخطة" else "Save Plan", fontWeight = FontWeight.Bold)
+                        Text(strings.uiSavePlan, fontWeight = FontWeight.Bold)
                     }
                 }
             }

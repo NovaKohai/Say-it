@@ -56,7 +56,7 @@ fun TransactionItemCard(
     modifier: Modifier = Modifier
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
     val isExpense = transaction.type == TransactionType.EXPENSE
     val amountPrefix = if (isExpense) "-" else "+"
     val amountColor = if (isExpense) RedExpense else GreenIncome

@@ -1,9 +1,40 @@
 package com.example.sayit.core.localization
 
 val EnglishStrings = AppStrings(
+    installmentDeletedFeedback = "Installment plan deleted",
+    paymentRecordedFeedback = "Payment recorded",
+    installmentAddedFeedback = "Installment plan added",
+    settingsPleaseEnableNotificationAccessInSettings = "Please enable Notification Access in Settings",
+    settingsAIAssistantActiveReady = "AI Assistant Active & Ready",
+    settingsRealConversationalAIFinancialAdvisor = "Real conversational AI & financial advisor",
+    settingsAICompanion = "AI Companion",
+    settingsYouAreUsingTheLatestVersionOf = "You are using the latest version of Say It! ✅",
+    settingsCheckNow = "Check Now",
+    settingsStartTour = "Start Tour",
+    settingsTakeAQuickInteractiveWalkthroughOfAll = "Take a quick interactive walkthrough of all features",
+    settingsInteractiveGuideTour = "Interactive Guide Tour",
+    settingsDarkMode = "🌙 Dark Mode",
+    settingsLightMode = "☀️ Light Mode",
+    settingsChooseBetweenCrispLightThemeAndSleek = "Choose between crisp light theme and sleek dark mode",
+    settingsAppAppearance = "App Appearance",
+    quickLunch = "🍽️ Lunch",
+    quickGroceries = "🛒 Groceries",
+    quickTransit = "🚗 Transit",
+    quickCoffee = "☕ Coffee",
+    uiSavePlan = "Save Plan",
+    uiPleaseEnterMonthsDuration = "Please enter months duration",
+    uiPleaseEnterAValidMonthlyAmount = "Please enter a valid monthly amount",
+    uiPleaseEnterInstallmentName = "Please enter installment name",
+    uiNotesOptional = "Notes (Optional)",
+    uiDueDay = "Due Day",
+    uiItemInstallmentName = "Item / Installment Name",
+    uiAddNewInstallmentPlan = "Add New Installment Plan",
+    // ── Language flag ──
+    isArabic = false,
+
     // TopBar & Header
     appName = "Say It",
-    localOfflineBadge = "100% Local & Offline",
+    localOfflineBadge = "Local-first",
     morningGreeting = "Good morning",
     eveningGreeting = "Good evening",
     dashboardSubtitle = "Smart real-time view of your finances & savings",
@@ -17,7 +48,7 @@ val EnglishStrings = AppStrings(
     tabInstallments = "Installments",
     tabAiCopilot = "Assistant",
     tabSqlDb = "SQLite DB",
-    tabSettings = "Banks & Sync",
+    tabSettings = "Banks",
 
     // Actions & Common
     addManual = "Add Manual",
@@ -156,6 +187,74 @@ val EnglishStrings = AppStrings(
     overdue = "Overdue",
     upcomingInstallmentNotice = "Upcoming Installments This Week",
     viewAllInstallments = "View All Installments",
+
+    // Installments – NEW keys (Phase 1 i18n)
+    monthFullySettled = "Month Fully Settled",
+    plansCount = "plans",
+    paidLabel = "Paid",
+    totalLabel = "Total",
+    monthInstallmentPaid = "Month installment paid",
+    partiallyPaidFormat = "Partially paid: %s / %s %s",
+    unpaidDueFormat = "Due: %s %s (Day %d)",
+    payButton = "Pay",
+    deleteInstallmentDesc = "Delete Installment",
+    debtPayoffCurve = "Debt Payoff Curve",
+    projectedZeroDebt = "Projected path to zero debt",
+    debtFreeLabel = "Debt-Free",
+    payoffLabel = "Payoff",
+    noDebtCongrats = "Congratulations, no remaining debt! 🎉",
+    addFirstPlanPayoff = "Add your first plan to start tracking payoff",
+    paidSoFarLabel = "Paid So Far",
+
+    // Record Payment Dialog – NEW keys
+    recordInstallmentPayment = "Record Installment Payment",
+    thisMonthDue = "This Month's Due:",
+    paidSoFarColon = "Paid So Far:",
+    remainingToSettle = "Remaining to Settle:",
+    payFullInstallmentFormat = "Pay Full Installment (%s %s)",
+    customPaymentAmount = "Or enter custom payment amount",
+    invalidAmountError = "Please enter a valid amount",
+    confirmPayment = "Confirm Payment",
+
+    // Dashboard Installments Card – NEW keys
+    activePlansPayoffTracking = "%d active plans | Auto payoff tracking",
+    smartDebtTracker = "Smart installment & debt tracker",
+    addFirstPlanDashboard = "Add your first plan to track debt payoff & bank SMS",
+    dueThisMonthLabel = "Due This Month",
+    paidAmountFormat = "Paid: %s %s",
+
+    // Quick Presets – NEW keys
+    quickTapLogTitle = "Quick 1-Tap Log ⚡",
+    customAdd = "Custom +",
+
+    // Splash Screen – NEW keys
+    splashTagline = "Your Smart AI Financial Copilot",
+    splashPillOffline = "100% Offline",
+    splashPillAi = "Smart AI",
+    splashPillBanks = "Bank SMS",
+    splashEncryptedMessage = "Encrypted & stored privately on-device",
+
+    // App Update – NEW keys
+    newUpdateAvailable = "🚀 New Update Available",
+    newVersionReady = "New Version Ready",
+    currentVersionFormat = "Current: v%s",
+    whatsNewTitle = "What's new in this release:",
+    downloadingFormat = "Downloading... %d%%",
+    cancelDownload = "Cancel Download",
+    downloadFinished = "Download finished! Ready to install 📦",
+    installUpdateNow = "Install Update Now 📦",
+    downloadFailed = "Failed to download update",
+    browserButton = "Browser",
+    retryButton = "Retry",
+    updateDownloadNow = "Update & Download Now 🚀",
+    laterButton = "Later",
+
+    // Bank Hub Updates Section – NEW keys
+    appUpdatesTitle = "App Updates",
+    currentVersionLabel = "Current version: v%s",
+    checkingForUpdates = "Checking...",
+    checkForUpdates = "Check for Updates",
+    upToDate = "✅ You are on the latest version!",
 
     // Analytics Comparison
     vsLastMonth = "vs Last Month",

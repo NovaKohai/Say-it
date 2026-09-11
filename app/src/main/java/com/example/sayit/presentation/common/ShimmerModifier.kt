@@ -11,43 +11,53 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import kotlin.math.hypot
 
 /**
- * High-performance hardware-accelerated shimmer effect modifier following Emil Kowalski's
- * design engineering principles for smooth, 60fps loading skeleton states.
+ * Reads animation state during drawing so loading does not recompose every frame.
+ * Dynamically adapts to component dimensions and creates a luminous fintech sheen.
  */
 fun Modifier.shimmerEffect(): Modifier = composed {
+    if (!motionEnabled()) return@composed background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+
     val transition = rememberInfiniteTransition(label = "shimmerTransition")
-    val translateAnim by transition.animateFloat(
+    val progress by transition.animateFloat(
         initialValue = 0f,
-        targetValue = 1200f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1100, easing = LinearEasing),
+            animation = tween(durationMillis = 1300, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
-        label = "shimmerOffset"
+        label = "shimmerProgress"
     )
 
-    val isDark = MaterialTheme.colorScheme.surface.let {
-        // Simple luminance heuristic or background check
-        it.red * 0.299f + it.green * 0.587f + it.blue * 0.114f < 0.5f
+    val baseColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+    val midColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f)
+    val highlightColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f)
+
+    drawBehind {
+        val width = size.width
+        val height = size.height
+        val diagonal = hypot(width.toDouble(), height.toDouble()).toFloat()
+        val totalTravel = diagonal * 1.8f
+        val startOffset = -diagonal * 0.4f + (progress * totalTravel)
+        val band = (diagonal * 0.35f).coerceIn(200f, 500f)
+
+        drawRect(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    baseColor,
+                    midColor,
+                    highlightColor,
+                    midColor,
+                    baseColor
+                ),
+                start = Offset(startOffset - band, startOffset - band),
+                end = Offset(startOffset + band, startOffset + band)
+            )
+        )
     }
-
-    val baseColor = if (isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0)
-    val highlightColor = if (isDark) Color(0xFF334155) else Color(0xFFF1F5F9)
-
-    val brush = Brush.linearGradient(
-        colors = listOf(
-            baseColor,
-            highlightColor,
-            baseColor
-        ),
-        start = Offset(translateAnim - 400f, translateAnim - 400f),
-        end = Offset(translateAnim, translateAnim)
-    )
-
-    background(brush)
 }

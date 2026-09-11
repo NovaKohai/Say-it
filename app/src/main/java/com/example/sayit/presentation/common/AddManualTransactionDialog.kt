@@ -3,6 +3,7 @@ package com.example.sayit.presentation.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,8 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -58,7 +62,7 @@ fun AddManualTransactionDialog(
     onSaveTransaction: (Transaction) -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     var amountText by remember { mutableStateOf("") }
     var merchantText by remember { mutableStateOf("") }
@@ -100,14 +104,19 @@ fun AddManualTransactionDialog(
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(if (isExpense) RedExpense else MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable { selectedType = TransactionType.EXPENSE }
+                            .heightIn(min = 48.dp)
+                            .selectable(
+                                selected = isExpense,
+                                role = Role.RadioButton,
+                                onClick = { selectedType = TransactionType.EXPENSE }
+                            )
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = strings.expenseType,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = if (isExpense) Color.White else MaterialTheme.colorScheme.onSurface
+                            color = if (isExpense) Color(0xFF0F172A) else MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -117,14 +126,19 @@ fun AddManualTransactionDialog(
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(if (isIncome) GreenIncome else MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable { selectedType = TransactionType.INCOME }
+                            .heightIn(min = 48.dp)
+                            .selectable(
+                                selected = isIncome,
+                                role = Role.RadioButton,
+                                onClick = { selectedType = TransactionType.INCOME }
+                            )
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = strings.incomeType,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = if (isIncome) Color.White else MaterialTheme.colorScheme.onSurface
+                            color = if (isIncome) Color(0xFF0F172A) else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -166,7 +180,12 @@ fun AddManualTransactionDialog(
                                     if (isSelected) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant
                                 )
-                                .clickable { selectedSource = source }
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = isSelected,
+                                    role = Role.RadioButton,
+                                    onClick = { selectedSource = source }
+                                )
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             Text(
@@ -188,6 +207,7 @@ fun AddManualTransactionDialog(
                     items(categories) { cat ->
                         val isSelected = selectedCategoryId == cat.id
                         val catColor = Color(cat.colorHex)
+                        val selectedContentColor = if (catColor.luminance() > 0.42f) Color(0xFF0F172A) else Color.White
                         val catName = if (isEn) cat.nameEn else cat.nameAr
                         Box(
                             modifier = Modifier
@@ -196,21 +216,26 @@ fun AddManualTransactionDialog(
                                     if (isSelected) catColor
                                     else MaterialTheme.colorScheme.surfaceVariant
                                 )
-                                .clickable { selectedCategoryId = cat.id }
+                                .heightIn(min = 48.dp)
+                                .selectable(
+                                    selected = isSelected,
+                                    role = Role.RadioButton,
+                                    onClick = { selectedCategoryId = cat.id }
+                                )
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = getCategoryIcon(cat.iconName),
                                     contentDescription = null,
-                                    tint = if (isSelected) Color.White else catColor,
+                                    tint = if (isSelected) selectedContentColor else catColor,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = catName,
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                    color = if (isSelected) selectedContentColor else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -219,7 +244,8 @@ fun AddManualTransactionDialog(
             }
         },
         confirmButton = {
-            Button(
+            val pressInteraction5 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            Button(interactionSource = pressInteraction5,
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     val defaultMerchant = if (isEn) "Manual Transaction" else "معاملة يدوية"
@@ -248,7 +274,7 @@ fun AddManualTransactionDialog(
                 enabled = (amountText.toDoubleOrNull() ?: 0.0) > 0,
                 colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction5)
             ) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = null)
                 Spacer(modifier = Modifier.width(6.dp))
@@ -256,9 +282,10 @@ fun AddManualTransactionDialog(
             }
         },
         dismissButton = {
-            TextButton(
+            val pressInteraction6 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            TextButton(interactionSource = pressInteraction6,
                 onClick = onDismiss,
-                modifier = Modifier.pressScale(0.95f)
+                modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction6)
             ) {
                 Text(strings.cancel)
             }

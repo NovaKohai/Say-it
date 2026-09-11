@@ -12,6 +12,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -26,6 +28,8 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalInputModeManager
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -56,7 +60,7 @@ object EmilEasings {
      * Snappy spring with low bounce for UI micro-interactions.
      */
     val SnappySpring = spring<Float>(
-        dampingRatio = Spring.DampingRatioLowBouncy,
+        dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMediumLow
     )
 
@@ -64,7 +68,7 @@ object EmilEasings {
      * Fast spring for immediate touch down / touch up feedback.
      */
     val FastPressSpring = spring<Float>(
-        dampingRatio = 0.72f,
+        dampingRatio = 1f,
         stiffness = 500f
     )
 }
@@ -72,43 +76,42 @@ object EmilEasings {
 /**
  * Emil Kowalski tactile press feedback modifier with sensory haptics.
  * Scales down subtly (e.g. 0.97f or 0.95f) on touch down, provides a physical haptic tick,
- * and springs back smoothly on release.
+ * and releases over 160ms. Native buttons must share their interactionSource.
  * Hardware-accelerated via graphicsLayer with zero layout re-measurement.
  */
 fun Modifier.pressScale(
     targetScale: Float = 0.97f,
     enabled: Boolean = true,
     haptic: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
     onClick: (() -> Unit)? = null
 ): Modifier = composed {
-    if (!enabled) return@composed this
+    val allowMotion = motionEnabled()
+    val touchInput = LocalInputModeManager.current.inputMode == InputMode.Touch
 
     val hapticFeedback = LocalHapticFeedback.current
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressSource = interactionSource ?: remember { MutableInteractionSource() }
+    val isPressed by pressSource.collectIsPressedAsState()
 
     LaunchedEffect(isPressed) {
-        if (isPressed && haptic) {
+        if (isPressed && enabled && touchInput && haptic) {
             hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         }
     }
 
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) targetScale else 1f,
-        animationSpec = EmilEasings.FastPressSpring,
+    val scale = animateFloatAsState(
+        targetValue = if (isPressed && enabled && allowMotion && touchInput) targetScale.coerceIn(0.95f, 0.98f) else 1f,
+        animationSpec = tween(if (isPressed) 100 else 160, easing = EmilEasings.StrongEaseOut),
         label = "emilPressScale"
     )
 
     val clickableModifier = if (onClick != null) {
         Modifier.clickable(
-            interactionSource = interactionSource,
-            indication = null, // Custom scale provides the primary tactile feedback
-            onClick = {
-                if (haptic) {
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                }
-                onClick()
-            }
+            interactionSource = pressSource,
+            enabled = enabled,
+            indication = LocalIndication.current,
+            role = Role.Button,
+            onClick = onClick
         )
     } else {
         Modifier
@@ -117,14 +120,14 @@ fun Modifier.pressScale(
     this
         .then(clickableModifier)
         .graphicsLayer {
-            scaleX = scale
-            scaleY = scale
+            scaleX = if (allowMotion) scale.value else 1f
+            scaleY = if (allowMotion) scale.value else 1f
         }
 }
 
 /**
  * Smooth Animated Numeric Text counter.
- * Morphs integer numbers smoothly over 350ms instead of abrupt visual jumps,
+ * Morphs integer numbers smoothly over 200ms instead of abrupt visual jumps,
  * creating a perceptual feeling of living, real-time financial balance.
  */
 @Composable
@@ -140,7 +143,7 @@ fun AnimatedNumericText(
     val animatedValue by animateIntAsState(
         targetValue = targetValue,
         animationSpec = tween(
-            durationMillis = 240,
+            durationMillis = if (motionEnabled()) 200 else 0,
             easing = EmilEasings.StrongEaseOut
         ),
         label = "numericCounter"
@@ -166,7 +169,7 @@ fun emilScaleFadeEnter(
         animationSpec = tween(durationMillis = durationMillis, easing = EmilEasings.StrongEaseOut)
     ) + scaleIn(
         initialScale = initialScale,
-        animationSpec = EmilEasings.SnappySpring
+        animationSpec = tween(durationMillis, easing = EmilEasings.StrongEaseOut)
     )
 }
 

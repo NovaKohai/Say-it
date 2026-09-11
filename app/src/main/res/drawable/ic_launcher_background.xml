@@ -1,40 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-
-    <!-- Crisp Corporate Pure White Canvas -->
-    <path
-        android:pathData="M0,0h108v108h-108z">
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M0,0h108v108h-108z">
         <aapt:attr name="android:fillColor">
-            <gradient
-                android:startX="54"
-                android:startY="0"
-                android:endX="54"
-                android:endY="108"
-                android:type="linear">
-                <item android:color="#FFFFFF" android:offset="0.0" />
-                <item android:color="#F8FAFC" android:offset="1.0" />
+            <gradient android:startX="18" android:startY="10" android:endX="92" android:endY="100" android:type="linear">
+                <item android:color="#17243A" android:offset="0" />
+                <item android:color="#09111F" android:offset="1" />
             </gradient>
         </aapt:attr>
     </path>
-
-    <!-- Very Subtle Ambient Radial Soft Shadow / Light Depth -->
-    <path
-        android:pathData="M54,54m-42,0a42,42 0 1,1 84,0a42,42 0 1,1 -84,0">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:startX="54"
-                android:startY="20"
-                android:endX="54"
-                android:endY="88"
-                android:type="linear">
-                <item android:color="#00000000" android:offset="0.0" />
-                <item android:color="#050F172A" android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
+    <path android:fillColor="#1410B981" android:pathData="M87,18m-31,0a31,31 0,1 1,62 0a31,31 0,1 1,-62 0" />
 </vector>

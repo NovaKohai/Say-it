@@ -3,7 +3,7 @@ package com.example.sayit.core.localization
 val ArabicStrings = AppStrings(
     // TopBar & Header
     appName = "Say It",
-    localOfflineBadge = "محلي 100% بدون نت",
+    localOfflineBadge = "محلي أولاً",
     morningGreeting = "صباح الخير",
     eveningGreeting = "مساء الخير",
     dashboardSubtitle = "نظرة مالية ذكية ومباشرة لمصاريفك ومدخراتك",
@@ -17,7 +17,7 @@ val ArabicStrings = AppStrings(
     tabInstallments = "الأقساط",
     tabAiCopilot = "المساعد",
     tabSqlDb = "قاعدة SQLite",
-    tabSettings = "البنوك والمزامنة",
+    tabSettings = "البنوك",
 
     // Actions & Common
     addManual = "إضافة يدوية",

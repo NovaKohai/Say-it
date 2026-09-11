@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -50,6 +52,7 @@ fun InstallmentPayoffGraph(
     forecast: InstallmentPayoffForecast,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
     val strings = LocalStrings.current
     val isArabic = strings.isArabic
     val points = forecast.monthlyProjection
@@ -62,8 +65,8 @@ fun InstallmentPayoffGraph(
             .background(
                 Brush.linearGradient(
                     listOf(
-                        Emerald500.copy(alpha = 0.35f),
-                        CyanAccent.copy(alpha = 0.20f),
+                        colors.primary.copy(alpha = 0.35f),
+                        colors.secondary.copy(alpha = 0.20f),
                         Color.Transparent
                     )
                 )
@@ -73,7 +76,7 @@ fun InstallmentPayoffGraph(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(23.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+            colors = CardDefaults.cardColors(containerColor = colors.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -94,28 +97,28 @@ fun InstallmentPayoffGraph(
                             modifier = Modifier
                                 .size(38.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Emerald500.copy(alpha = 0.15f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.35f), RoundedCornerShape(10.dp)),
+                                .background(colors.primary.copy(alpha = 0.15f))
+                                .border(1.dp, colors.primary.copy(alpha = 0.35f), RoundedCornerShape(10.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.TrendingDown,
                                 contentDescription = null,
-                                tint = Emerald500,
+                                tint = colors.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = if (isArabic) "مسار التخلص من المديونية" else "Debt Payoff Curve",
+                                text = strings.debtPayoffCurve,
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                             Text(
-                                text = if (isArabic) "تناقص الأقساط حتى التصفير التام" else "Projected path to zero debt",
+                                text = strings.projectedZeroDebt,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -127,8 +130,8 @@ fun InstallmentPayoffGraph(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Emerald500.copy(alpha = 0.2f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                                .background(colors.primary.copy(alpha = 0.2f))
+                                .border(1.dp, colors.primary.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -136,15 +139,15 @@ fun InstallmentPayoffGraph(
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = null,
-                                    tint = Emerald500,
+                                    tint = colors.primary,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = if (isArabic) "خالي من الديون" else "Debt-Free",
+                                    text = strings.debtFreeLabel,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Emerald500
+                                        color = colors.primary
                                     )
                                 )
                             }
@@ -155,16 +158,16 @@ fun InstallmentPayoffGraph(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(CyanAccent.copy(alpha = 0.15f))
-                                .border(1.dp, CyanAccent.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                                .background(colors.secondary.copy(alpha = 0.15f))
+                                .border(1.dp, colors.secondary.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (isArabic) "اكتمال: $payoffLabel" else "Payoff: $payoffLabel",
+                                text = "${strings.payoffLabel}: $payoffLabel",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = CyanAccent
+                                    color = colors.secondary
                                 )
                             )
                         }
@@ -182,9 +185,9 @@ fun InstallmentPayoffGraph(
                     ) {
                         Text(
                             text = if (forecast.totalRemainingDebt <= 0) {
-                                if (isArabic) "تهانينا، لا توجد أقساط أو مديونيات متبقية 🎉" else "Congratulations, no remaining debt! 🎉"
+                                strings.noDebtCongrats
                             } else {
-                                if (isArabic) "أضف قسطك الأول لبدء حساب مسار التصفير" else "Add your first plan to start tracking payoff"
+                                strings.addFirstPlanPayoff
                             },
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -196,17 +199,18 @@ fun InstallmentPayoffGraph(
                     val maxDebt = (points.maxOfOrNull { it.remainingDebt } ?: 1.0).coerceAtLeast(1.0)
                     val emeraldGradient = Brush.verticalGradient(
                         colors = listOf(
-                            Emerald500.copy(alpha = 0.45f),
-                            CyanAccent.copy(alpha = 0.15f),
+                            colors.primary.copy(alpha = 0.45f),
+                            colors.secondary.copy(alpha = 0.15f),
                             Color.Transparent
                         )
                     )
-                    val lineColor = Emerald500
+                    val lineColor = colors.primary
 
                     Canvas(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(140.dp)
+                            .semantics { contentDescription = "${strings.debtPayoffCurve}: ${strings.totalDebtRemaining} ${numberFormat.format(forecast.totalRemainingDebt)} ${strings.currency}" }
                     ) {
                         val width = size.width
                         val height = size.height
@@ -220,7 +224,7 @@ fun InstallmentPayoffGraph(
                         for (i in 0..gridLines) {
                             val y = graphHeight * (i.toFloat() / gridLines)
                             drawLine(
-                                color = Color.White.copy(alpha = 0.06f),
+                                color = colors.outlineVariant,
                                 start = Offset(0f, y),
                                 end = Offset(width, y),
                                 strokeWidth = 1f,
@@ -273,10 +277,10 @@ fun InstallmentPayoffGraph(
                             // Draw Nodes
                             coordinates.forEachIndexed { idx, coord ->
                                 val isLast = idx == coordinates.size - 1
-                                val nodeColor = if (isLast) CyanAccent else Emerald500
+                                val nodeColor = if (isLast) colors.secondary else colors.primary
 
                                 drawCircle(
-                                    color = Color(0xFF0F172A),
+                                    color = colors.surface,
                                     radius = 5.dp.toPx(),
                                     center = coord
                                 )
@@ -328,14 +332,14 @@ fun InstallmentPayoffGraph(
                         valueColor = MaterialTheme.colorScheme.onSurface
                     )
                     StatColumn(
-                        label = if (isArabic) "المسدد حتى الآن" else "Paid So Far",
+                        label = strings.paidSoFarLabel,
                         value = "${numberFormat.format(forecast.totalPaidSoFar)} ${strings.currency}",
-                        valueColor = Emerald500
+                        valueColor = colors.primary
                     )
                     StatColumn(
                         label = strings.dueThisMonth,
                         value = "${numberFormat.format(forecast.currentMonthDues)} ${strings.currency}",
-                        valueColor = CyanAccent
+                        valueColor = colors.secondary
                     )
                 }
             }

@@ -354,7 +354,7 @@ class DashboardViewModel(
     }
 
     fun exportTransactionsCsv(context: Context) {
-        val txs = uiState.value.filteredTransactions.ifEmpty { uiState.value.transactions }
+        val txs = uiState.value.filteredTransactions
         val lang = uiState.value.language
         if (txs.isEmpty()) {
             viewModelScope.launch {
@@ -375,7 +375,7 @@ class DashboardViewModel(
     }
 
     fun shareReport(context: Context) {
-        val txs = uiState.value.filteredTransactions.ifEmpty { uiState.value.transactions }
+        val txs = uiState.value.filteredTransactions
         val forecast = uiState.value.forecast
         val lang = uiState.value.language
         val periodTitle = if (lang == AppLanguage.EN) uiState.value.timePeriod.titleEn else uiState.value.timePeriod.titleAr

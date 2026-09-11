@@ -16,7 +16,7 @@ val DarkSurfaceBorder = Color(0xFF334155)
 
 // Light Theme Surfaces
 val LightBackground = Color(0xFFF8FAFC)
-val LightSurface = Color(0xFFFFFFFF)
+val LightSurface = Color(0xFFFDFEFD)
 val LightSurfaceElevated = Color(0xFFF1F5F9)
 val LightSurfaceBorder = Color(0xFFE2E8F0)
 
@@ -31,4 +31,4 @@ val GreenIncome = Color(0xFF22C55E)
 val TextPrimaryDark = Color(0xFFF1F5F9)
 val TextSecondaryDark = Color(0xFF94A3B8)
 val TextPrimaryLight = Color(0xFF0F172A)
-val TextSecondaryLight = Color(0xFF64748B)
+val TextSecondaryLight = Color(0xFF526376)

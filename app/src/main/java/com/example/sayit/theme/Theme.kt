@@ -13,36 +13,44 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = Emerald500,
-    onPrimary = Color.Black,
+    onPrimary = DarkBackground,
     primaryContainer = Emerald700,
     onPrimaryContainer = Emerald300,
     secondary = CyanAccent,
-    onSecondary = Color.Black,
+    onSecondary = DarkBackground,
     background = DarkBackground,
     onBackground = TextPrimaryDark,
     surface = DarkSurface,
     onSurface = TextPrimaryDark,
     surfaceVariant = DarkSurfaceElevated,
     onSurfaceVariant = TextSecondaryDark,
+    outline = TextSecondaryDark,
+    outlineVariant = DarkSurfaceBorder,
+    tertiary = GoldWarning,
+    onTertiary = DarkBackground,
     error = RedExpense,
-    onError = Color.White
+    onError = DarkBackground
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Emerald600,
-    onPrimary = Color.White,
+    primary = Emerald700,
+    onPrimary = TextPrimaryDark,
     primaryContainer = Emerald300,
     onPrimaryContainer = Emerald700,
-    secondary = CyanAccent,
-    onSecondary = Color.White,
+    secondary = Color(0xFF036B91),
+    onSecondary = TextPrimaryDark,
     background = LightBackground,
     onBackground = TextPrimaryLight,
     surface = LightSurface,
     onSurface = TextPrimaryLight,
     surfaceVariant = LightSurfaceElevated,
     onSurfaceVariant = TextSecondaryLight,
-    error = RedExpense,
-    onError = Color.White
+    outline = TextSecondaryLight,
+    outlineVariant = LightSurfaceBorder,
+    tertiary = Color(0xFF855300),
+    onTertiary = TextPrimaryDark,
+    error = Color(0xFFBA1A1A),
+    onError = TextPrimaryDark
 )
 
 @Composable

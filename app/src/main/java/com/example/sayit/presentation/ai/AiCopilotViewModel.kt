@@ -29,6 +29,7 @@ enum class ApiKeyTestState {
 }
 
 data class AiCopilotUiState(
+    val showClearChatDialog: Boolean = false,
     val messages: List<AiMessage> = emptyList(),
     val isLoading: Boolean = false,
     val inputText: String = "",
@@ -56,6 +57,10 @@ class AiCopilotViewModel(
         )
     )
     val uiState: StateFlow<AiCopilotUiState> = _uiState.asStateFlow()
+
+    fun setClearChatDialogOpen(open: Boolean) {
+        _uiState.update { it.copy(showClearChatDialog = open) }
+    }
 
     fun initGreeting(isArabic: Boolean) {
         if (_uiState.value.messages.isEmpty()) {

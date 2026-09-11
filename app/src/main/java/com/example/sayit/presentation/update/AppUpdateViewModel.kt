@@ -36,9 +36,12 @@ data class UpdateUiState(
 )
 
 class AppUpdateViewModel(
-    private val context: Context,
-    private val updateRepository: UpdateRepository = UpdateRepositoryImpl(context)
+    context: Context,
+    updateRepository: UpdateRepository? = null
 ) : ViewModel() {
+
+    private val appContext = context.applicationContext
+    private val updateRepository: UpdateRepository = updateRepository ?: UpdateRepositoryImpl(appContext)
 
     private val _uiState = MutableStateFlow(UpdateUiState())
     val uiState: StateFlow<UpdateUiState> = _uiState.asStateFlow()
@@ -72,7 +75,7 @@ class AppUpdateViewModel(
                         )
                     }
                     // Trigger system notification
-                    UpdateNotificationHelper.showUpdateNotification(context, info, isArabic)
+                    UpdateNotificationHelper.showUpdateNotification(appContext, info, isArabic)
                 } else {
                     _uiState.update {
                         it.copy(
@@ -111,7 +114,7 @@ class AppUpdateViewModel(
 
         downloadJob?.cancel()
         downloadJob = viewModelScope.launch {
-            val destinationFile = File(context.cacheDir, "updates/SayIt-v${info.latestVersionName}.apk")
+            val destinationFile = File(appContext.cacheDir, "updates/SayIt-v${info.latestVersionName}.apk")
 
             _uiState.update {
                 it.copy(
@@ -233,7 +236,7 @@ class AppUpdateViewModel(
             )
         }
 
-        UpdateNotificationHelper.showUpdateNotification(context, mockInfo, isArabic)
+        UpdateNotificationHelper.showUpdateNotification(appContext, mockInfo, isArabic)
     }
 
     /**

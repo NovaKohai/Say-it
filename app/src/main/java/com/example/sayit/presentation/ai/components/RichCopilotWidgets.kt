@@ -128,12 +128,12 @@ fun BudgetSnapshotWidget(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if (strings.currency != "EGP") "فاضلك: ${String.format(Locale.US, "%,d", action.remaining.toInt())} ${strings.currency}" else "Remaining: ${String.format(Locale.US, "%,d", action.remaining.toInt())} ${strings.currency}",
+                    text = if (strings.isArabic) "فاضلك: ${String.format(Locale.US, "%,d", action.remaining.toInt())} ${strings.currency}" else "Remaining: ${String.format(Locale.US, "%,d", action.remaining.toInt())} ${strings.currency}",
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = if (action.remaining > 0) Emerald500 else RedExpense
                 )
                 Text(
-                    text = if (strings.currency != "EGP") "صرف اليوم: ${String.format(Locale.US, "%,d", action.burnRate.toInt())} ${strings.currency}/يوم" else "Burn: ${String.format(Locale.US, "%,d", action.burnRate.toInt())} /day",
+                    text = if (strings.isArabic) "صرف اليوم: ${String.format(Locale.US, "%,d", action.burnRate.toInt())} ${strings.currency}/يوم" else "Burn: ${String.format(Locale.US, "%,d", action.burnRate.toInt())} /day",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -166,7 +166,7 @@ fun TopMerchantsWidget(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (strings.currency != "EGP") "أعلى المتاجر إنفاقاً" else "Top Spend Merchants",
+                    text = if (strings.isArabic) "أعلى المتاجر إنفاقاً" else "Top Spend Merchants",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -205,7 +205,7 @@ fun ActionShortcutChip(
     modifier: Modifier = Modifier
 ) {
     val strings = LocalStrings.current
-    val isArabic = strings.currency != "EGP"
+    val isArabic = strings.isArabic
     val label = if (isArabic) action.labelAr else action.labelEn
 
     Box(

@@ -43,7 +43,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -68,6 +67,7 @@ import com.example.sayit.core.localization.AppLanguage
 import com.example.sayit.core.localization.LocalStrings
 import com.example.sayit.data.parser.BankMessageParser
 import com.example.sayit.presentation.dashboard.DashboardUiState
+import com.example.sayit.presentation.common.FintechLoadingSpinner
 import com.example.sayit.presentation.common.pressScale
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
@@ -145,7 +145,7 @@ fun BankHubScreen(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(
-                                    if (isAr) Emerald600 else MaterialTheme.colorScheme.surface
+                                    if (isAr) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                                 )
                                 .clickable { onLanguageChanged(AppLanguage.AR) }
                                 .padding(vertical = 10.dp),
@@ -156,7 +156,7 @@ fun BankHubScreen(
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = if (isAr) Color.White else MaterialTheme.colorScheme.onSurface
+                                color = if (isAr) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -166,7 +166,7 @@ fun BankHubScreen(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(
-                                    if (isEn) Emerald600 else MaterialTheme.colorScheme.surface
+                                    if (isEn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                                 )
                                 .clickable { onLanguageChanged(AppLanguage.EN) }
                                 .padding(vertical = 10.dp),
@@ -177,7 +177,7 @@ fun BankHubScreen(
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = if (isEn) Color.White else MaterialTheme.colorScheme.onSurface
+                                color = if (isEn) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -194,12 +194,12 @@ fun BankHubScreen(
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Text(
-                        text = if (uiState.language == AppLanguage.EN) "App Appearance" else "مظهر التطبيق",
+                        text = strings.settingsAppAppearance,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = if (uiState.language == AppLanguage.EN) "Choose between crisp light theme and sleek dark mode" else "التبديل بين المظهر الفاتح (الأبيض) والوضع الداكن",
+                        text = strings.settingsChooseBetweenCrispLightThemeAndSleek,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -216,18 +216,18 @@ fun BankHubScreen(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(
-                                    if (isLight) Emerald600 else MaterialTheme.colorScheme.surface
+                                    if (isLight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                                 )
                                 .clickable { onToggleDarkMode(false) }
                                 .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "☀️ Light Mode" else "☀️ الفاتح (الأبيض)",
+                                text = strings.settingsLightMode,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = if (isLight) Color.White else MaterialTheme.colorScheme.onSurface
+                                color = if (isLight) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -237,18 +237,18 @@ fun BankHubScreen(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(
-                                    if (isDark) Emerald600 else MaterialTheme.colorScheme.surface
+                                    if (isDark) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                                 )
                                 .clickable { onToggleDarkMode(true) }
                                 .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "🌙 Dark Mode" else "🌙 الوضع الداكن",
+                                text = strings.settingsDarkMode,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
+                                color = if (isDark) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -278,25 +278,25 @@ fun BankHubScreen(
                             modifier = Modifier
                                 .size(44.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF6366F1).copy(alpha = 0.15f)),
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Explore,
                                 contentDescription = null,
-                                tint = Color(0xFF6366F1),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(14.dp))
                         Column {
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "Interactive Guide Tour" else "الجولة الإرشادية للتطبيق",
+                                text = strings.settingsInteractiveGuideTour,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "Take a quick interactive walkthrough of all features" else "تعرّف على أهم مزايا ومساعدات التطبيق خطوة بخطوة",
+                                text = strings.settingsTakeAQuickInteractiveWalkthroughOfAll,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -308,12 +308,12 @@ fun BankHubScreen(
                     Button(
                         onClick = onRestartGuideTour,
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = if (uiState.language == AppLanguage.EN) "Start Tour" else "بدء الجولة",
+                            text = strings.settingsStartTour,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -341,20 +341,20 @@ fun BankHubScreen(
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(CircleShape)
-                                    .background(Emerald500.copy(alpha = 0.15f)),
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.SystemUpdate,
                                     contentDescription = null,
-                                    tint = Emerald500,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {
                                 Text(
-                                    text = if (uiState.language == AppLanguage.EN) "Check for Updates" else "التحقق من وجود تحديثات",
+                                    text = strings.checkForUpdates,
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -372,30 +372,32 @@ fun BankHubScreen(
 
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        Button(
+                        val pressInteraction23 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        Button(interactionSource = pressInteraction23,
                             onClick = onCheckForUpdate,
                             enabled = !isCheckingUpdate,
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-                            modifier = Modifier.pressScale()
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            modifier = Modifier.pressScale(interactionSource = pressInteraction23)
                         ) {
                             if (isCheckingUpdate) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    color = Color.White,
-                                    strokeWidth = 2.dp
+                                FintechLoadingSpinner(
+                                    size = 16.dp,
+                                    strokeWidth = 2.dp,
+                                    primaryColor = MaterialTheme.colorScheme.onPrimary,
+                                    accentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = if (uiState.language == AppLanguage.EN) "Checking..." else "جاري...",
+                                    text = strings.checkingForUpdates,
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             } else {
                                 Text(
-                                    text = if (uiState.language == AppLanguage.EN) "Check Now" else "فحص الآن",
+                                    text = strings.settingsCheckNow,
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -407,14 +409,14 @@ fun BankHubScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Emerald500.copy(alpha = 0.12f))
-                                .border(1.dp, Emerald500.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
                         ) {
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "You are using the latest version of Say It! ✅" else "أنت تستخدم أحدث إصدار متاح من Say It! ✅",
+                                text = strings.settingsYouAreUsingTheLatestVersionOf,
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                color = Emerald500
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -456,25 +458,25 @@ fun BankHubScreen(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(Brush.linearGradient(listOf(Emerald500, CyanAccent))),
+                                .background(Brush.linearGradient(listOf(MaterialTheme.colorScheme.primary, CyanAccent))),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.SmartToy,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "AI Companion" else "المساعد المالي الذكي",
+                                text = strings.settingsAICompanion,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = if (uiState.language == AppLanguage.EN) "Real conversational AI & financial advisor" else "شات بوت ذكي حقيقي لتحليل المصاريف والاستشارات",
+                                text = strings.settingsRealConversationalAIFinancialAdvisor,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -487,7 +489,7 @@ fun BankHubScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Emerald500.copy(alpha = 0.12f))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
                             .padding(horizontal = 14.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -495,13 +497,13 @@ fun BankHubScreen(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(CircleShape)
-                                .background(Emerald500)
+                                .background(MaterialTheme.colorScheme.primary)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (uiState.language == AppLanguage.EN) "AI Assistant Active & Ready" else "المساعد الذكي نشط ومفعل تلقائياً",
+                            text = strings.settingsAIAssistantActiveReady,
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = Emerald500
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -549,7 +551,7 @@ fun BankHubScreen(
                                     text = formattedNumber,
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.Black,
-                                        color = Emerald500
+                                        color = MaterialTheme.colorScheme.primary
                                     ),
                                     maxLines = 1,
                                     softWrap = false
@@ -558,7 +560,7 @@ fun BankHubScreen(
                                     text = strings.currency,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Emerald600
+                                        color = MaterialTheme.colorScheme.primary
                                     ),
                                     maxLines = 1,
                                     softWrap = false
@@ -588,7 +590,7 @@ fun BankHubScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(
-                                        if (isSelected) Emerald600 else MaterialTheme.colorScheme.surface
+                                        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                                     )
                                     .pressScale(0.94f, onClick = {
                                         budgetInput = preset.toInt().toString()
@@ -599,7 +601,7 @@ fun BankHubScreen(
                                 Text(
                                     text = "$formattedPreset ${strings.currency}",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1,
                                     softWrap = false
                                 )
@@ -625,7 +627,8 @@ fun BankHubScreen(
                             modifier = Modifier.weight(1f)
                         )
 
-                        Button(
+                        val pressInteraction24 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        Button(interactionSource = pressInteraction24,
                             onClick = {
                                 val v = budgetInput.toDoubleOrNull()
                                 if (v != null && v > 0) {
@@ -633,8 +636,8 @@ fun BankHubScreen(
                                 }
                             },
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-                            modifier = Modifier.pressScale(0.95f)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            modifier = Modifier.pressScale(0.95f, interactionSource = pressInteraction24)
                         ) {
                             Text(
                                 text = strings.apply,
@@ -669,7 +672,7 @@ fun BankHubScreen(
 Icon(
                                 imageVector = Icons.Default.MarkEmailRead,
                                 contentDescription = strings.close,
-                                tint = Emerald500
+                                tint = MaterialTheme.colorScheme.primary
                             )
                     }
 
@@ -692,7 +695,7 @@ Icon(
                             }
                         },
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(imageVector = Icons.Default.MarkEmailRead, contentDescription = null)
@@ -727,7 +730,7 @@ Icon(
                         Icon(
                             imageVector = Icons.Default.Security,
                             contentDescription = null,
-                            tint = Emerald500
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -755,14 +758,15 @@ Icon(
                                 context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                             } catch (e: Exception) {
                                 try {
-                                    val fallbackIntent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    }
+                                    val fallbackIntent = Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        android.net.Uri.parse("package:${context.packageName}")
+                                    )
                                     context.startActivity(fallbackIntent)
                                 } catch (_: Exception) {
                                     android.widget.Toast.makeText(
                                         context,
-                                        if (uiState.language == AppLanguage.EN) "Please enable Notification Access in Settings" else "يرجى تفعيل صلاحية قراءة الإشعارات من إعدادات الهاتف",
+                                        strings.settingsPleaseEnableNotificationAccessInSettings,
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -855,26 +859,25 @@ Icon(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(Emerald500.copy(alpha = 0.15f)),
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.SystemUpdate,
                                     contentDescription = null,
-                                    tint = Emerald500,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = if (isArabic) "التحديثات" else "App Updates",
+                                    text = strings.appUpdatesTitle,
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (isArabic) "الإصدار الحالي: v${BuildConfig.VERSION_NAME}"
-                                        else "Current version: v${BuildConfig.VERSION_NAME}",
+                                    text = strings.currentVersionLabel.format(BuildConfig.VERSION_NAME),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -887,32 +890,33 @@ Icon(
                     Button(
                         onClick = onCheckForUpdate,
                         enabled = !isCheckingUpdate,
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
                     ) {
                         if (isCheckingUpdate) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(18.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
+                            FintechLoadingSpinner(
+                                size = 18.dp,
+                                strokeWidth = 2.dp,
+                                primaryColor = MaterialTheme.colorScheme.onPrimary,
+                                accentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = if (isArabic) "جاري الفحص..." else "Checking...",
+                                text = strings.checkingForUpdates,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             )
                         } else {
                             Text(
-                                text = if (isArabic) "فحص التحديثات الآن" else "Check for Updates",
+                                text = strings.checkForUpdates,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             )
                         }
@@ -925,13 +929,13 @@ Icon(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Emerald500.copy(alpha = 0.12f))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
                         ) {
                             Text(
-                                text = if (isArabic) "✅ أنت على أحدث إصدار!" else "✅ You are on the latest version!",
+                                text = strings.upToDate,
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                color = Emerald500
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -977,13 +981,13 @@ private fun PermissionStatusRow(
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)
-                .background(Emerald500.copy(alpha = 0.15f)),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Emerald500,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
         }

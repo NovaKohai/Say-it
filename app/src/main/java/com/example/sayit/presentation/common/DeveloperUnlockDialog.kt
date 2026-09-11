@@ -63,7 +63,7 @@ fun DeveloperUnlockDialog(
     onUnlockSuccess: () -> Unit
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     var enteredPin by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }

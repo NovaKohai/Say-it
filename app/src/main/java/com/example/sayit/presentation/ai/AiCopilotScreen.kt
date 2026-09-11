@@ -3,6 +3,7 @@ package com.example.sayit.presentation.ai
 import android.content.Intent
 import android.net.Uri
 import com.example.sayit.data.local.SayItPreferences
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -51,7 +52,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +62,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -91,7 +91,9 @@ import com.example.sayit.presentation.ai.components.BudgetSnapshotWidget
 import com.example.sayit.presentation.ai.components.DeleteConfirmationCard
 import com.example.sayit.presentation.ai.components.TopMerchantsWidget
 import com.example.sayit.presentation.ai.components.TransactionConfirmationCard
+import com.example.sayit.presentation.common.FintechLoadingSpinner
 import com.example.sayit.presentation.common.pressScale
+import com.example.sayit.presentation.common.motionEnabled
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
 import com.example.sayit.theme.Emerald600
@@ -105,10 +107,9 @@ fun AiCopilotScreen(
     modifier: Modifier = Modifier
 ) {
     val strings = LocalStrings.current
-    val isArabic = strings.currency != "EGP"
-    val uiState by viewModel.uiState.collectAsState()
+    val isArabic = strings.isArabic
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    var showClearChatDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.initGreeting(isArabic)
@@ -157,11 +158,12 @@ fun AiCopilotScreen(
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
+            val pressInteraction1 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            IconButton(interactionSource = pressInteraction1,
                 onClick = onNavigateBack,
                 modifier = Modifier
                     .size(48.dp)
-                    .pressScale(0.92f)
+                    .pressScale(0.92f, interactionSource = pressInteraction1)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -252,11 +254,12 @@ fun AiCopilotScreen(
             Spacer(modifier = Modifier.width(4.dp))
 
             // Clear Chat Action
-            IconButton(
-                onClick = { showClearChatDialog = true },
+            val pressInteraction2 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            IconButton(interactionSource = pressInteraction2,
+                onClick = { viewModel.setClearChatDialogOpen(true) },
                 modifier = Modifier
                     .size(48.dp)
-                    .pressScale(0.92f)
+                    .pressScale(0.92f, interactionSource = pressInteraction2)
             ) {
                 Icon(
                     imageVector = Icons.Default.DeleteSweep,
@@ -364,13 +367,14 @@ fun AiCopilotScreen(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IconButton(
+            val pressInteraction3 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            IconButton(interactionSource = pressInteraction3,
                 onClick = onStartVoiceInput,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .pressScale(0.92f)
+                    .pressScale(0.92f, interactionSource = pressInteraction3)
             ) {
                 Icon(
                     imageVector = Icons.Default.Mic,
@@ -381,14 +385,15 @@ fun AiCopilotScreen(
 
             Spacer(modifier = Modifier.width(6.dp))
 
-            IconButton(
+            val pressInteraction4 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            IconButton(interactionSource = pressInteraction4,
                 onClick = { viewModel.sendMessage(uiState.inputText, isArabic) },
                 enabled = uiState.inputText.isNotBlank() && !uiState.isLoading,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(if (uiState.inputText.isNotBlank() && !uiState.isLoading) Emerald600 else MaterialTheme.colorScheme.surfaceVariant)
-                    .pressScale(0.92f)
+                    .pressScale(0.92f, interactionSource = pressInteraction4)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
@@ -398,16 +403,16 @@ fun AiCopilotScreen(
             }
         }
 
-        if (showClearChatDialog) {
+        if (uiState.showClearChatDialog) {
             AlertDialog(
-                onDismissRequest = { showClearChatDialog = false },
+                onDismissRequest = { viewModel.setClearChatDialogOpen(false) },
                 title = { Text(strings.clearChatConfirmTitle) },
                 text = { Text(strings.clearChatConfirmMessage) },
                 confirmButton = {
                     Button(
                         onClick = {
                             viewModel.clearChat(isArabic)
-                            showClearChatDialog = false
+                            viewModel.setClearChatDialogOpen(false)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
@@ -415,7 +420,7 @@ fun AiCopilotScreen(
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showClearChatDialog = false }) {
+                    TextButton(onClick = { viewModel.setClearChatDialogOpen(false) }) {
                         Text(strings.cancel)
                     }
                 }
@@ -629,7 +634,7 @@ fun ApiKeyInputDialog(
                 if (testState == ApiKeyTestState.TESTING) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Emerald500)
+                        FintechLoadingSpinner(size = 18.dp, strokeWidth = 2.dp)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = if (isArabic) "جاري فحص المفتاح والاتصال..." else "Testing connection...",
@@ -705,7 +710,7 @@ fun ChatMessageBubble(
 ) {
     val isUser = message.sender == MessageSender.USER
     val strings = LocalStrings.current
-    val isArabic = strings.currency != "EGP"
+    val isArabic = strings.isArabic
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -884,34 +889,40 @@ fun ChatMessageBubble(
 
 @Composable
 fun ThinkingIndicatorBubble(isArabic: Boolean) {
-    val transition = rememberInfiniteTransition(label = "thinkingWave")
-    val dot1Scale by transition.animateFloat(
-        initialValue = 0.6f,
-        targetValue = 1.25f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, delayMillis = 0),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "dot1"
-    )
-    val dot2Scale by transition.animateFloat(
-        initialValue = 0.6f,
-        targetValue = 1.25f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, delayMillis = 150),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "dot2"
-    )
-    val dot3Scale by transition.animateFloat(
-        initialValue = 0.6f,
-        targetValue = 1.25f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, delayMillis = 300),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "dot3"
-    )
+    val allowMotion = motionEnabled()
+    val dotTransitions = if (allowMotion) {
+        val transition = rememberInfiniteTransition(label = "thinkingWave")
+        val dot1Bounce by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(450, delayMillis = 0, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "dot1Bounce"
+        )
+        val dot2Bounce by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(450, delayMillis = 150, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "dot2Bounce"
+        )
+        val dot3Bounce by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(450, delayMillis = 300, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "dot3Bounce"
+        )
+        Triple(dot1Bounce, dot2Bounce, dot3Bounce)
+    } else {
+        Triple(0f, 0f, 0f)
+    }
 
     Card(
         shape = RoundedCornerShape(18.dp),
@@ -923,39 +934,27 @@ fun ThinkingIndicatorBubble(isArabic: Boolean) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .graphicsLayer {
-                            scaleX = dot1Scale
-                            scaleY = dot1Scale
-                        }
-                        .clip(CircleShape)
-                        .background(Emerald500)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .graphicsLayer {
-                            scaleX = dot2Scale
-                            scaleY = dot2Scale
-                        }
-                        .clip(CircleShape)
-                        .background(CyanAccent)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .graphicsLayer {
-                            scaleX = dot3Scale
-                            scaleY = dot3Scale
-                        }
-                        .clip(CircleShape)
-                        .background(Emerald600)
-                )
+                listOf(
+                    dotTransitions.first to Emerald500,
+                    dotTransitions.second to CyanAccent,
+                    dotTransitions.third to Emerald600
+                ).forEach { (bounce, color) ->
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .graphicsLayer {
+                                val scale = if (allowMotion) 0.75f + (0.45f * bounce) else 1f
+                                scaleX = scale
+                                scaleY = scale
+                                translationY = if (allowMotion) -4.dp.toPx() * bounce else 0f
+                            }
+                            .clip(CircleShape)
+                            .background(color)
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -989,4 +988,3 @@ fun parseMarkdownToAnnotatedString(content: String): AnnotatedString {
         }
     }
 }
-

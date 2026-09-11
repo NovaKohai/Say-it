@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -73,6 +75,9 @@ import com.example.sayit.domain.model.Transaction
 import com.example.sayit.domain.usecase.ParseVoiceInputUseCase
 import com.example.sayit.presentation.common.AudioWaveVisualizer
 import com.example.sayit.presentation.common.getCategoryIcon
+import com.example.sayit.presentation.common.emilScaleFadeEnter
+import com.example.sayit.presentation.common.emilScaleFadeExit
+import com.example.sayit.presentation.common.motionEnabled
 import com.example.sayit.presentation.common.pressScale
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
@@ -87,7 +92,7 @@ fun VoiceInputDialog(
 ) {
     val context = LocalContext.current
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -133,14 +138,21 @@ fun VoiceInputDialog(
         }
     }
 
+    val allowMotion = motionEnabled()
+
     // Pulsing circle animation when recording
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (isListening) 1.25f else 1f,
-        animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse),
-        label = "scale"
-    )
+    val pulseScale = if (allowMotion) {
+        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+        val animatedScale by infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = if (isListening) 1.25f else 1f,
+            animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse),
+            label = "scale"
+        )
+        animatedScale
+    } else {
+        1f
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -277,7 +289,19 @@ fun VoiceInputDialog(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Extracted Entity Preview Card (AI Parsed)
-            AnimatedVisibility(visible = parsedResult != null && (parsedResult?.amount ?: 0.0) > 0) {
+            AnimatedVisibility(
+                visible = parsedResult != null && (parsedResult?.amount ?: 0.0) > 0,
+                enter = if (allowMotion) {
+                    emilScaleFadeEnter(durationMillis = 220, initialScale = 0.96f)
+                } else {
+                    fadeIn(tween(100))
+                },
+                exit = if (allowMotion) {
+                    emilScaleFadeExit(durationMillis = 160, targetScale = 0.98f)
+                } else {
+                    fadeOut(tween(100))
+                }
+            ) {
                 parsedResult?.let { res ->
                     val cat = Category.findDefault(res.categoryId)
                     val catName = if (isEn) cat.nameEn else cat.nameAr
@@ -347,7 +371,8 @@ fun VoiceInputDialog(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Save Button
-            Button(
+            val pressInteraction31 = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            Button(interactionSource = pressInteraction31,
                 onClick = {
                     parsedResult?.let { res ->
                         if (res.amount > 0) {
@@ -361,7 +386,7 @@ fun VoiceInputDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
-                    .pressScale(0.96f),
+                    .pressScale(0.96f, interactionSource = pressInteraction31),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Emerald600)
             ) {

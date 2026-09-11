@@ -43,8 +43,7 @@ class SmsBroadcastReceiver : BroadcastReceiver() {
                     val instRepo = InstallmentRepositoryImpl(db)
                     val instUseCase = ProcessInstallmentSmsUseCase(instRepo)
                     val parsed = InstallmentSmsParser.parse(sender, fullBody)
-                    val processed = instUseCase(sender, fullBody)
-                    if (processed && parsed != null) {
+                    if (parsed != null && instUseCase(parsed)) {
                         val title = if (parsed.isPaymentConfirmation) "تم تسجيل سداد قسط" else "تم رصد استحقاق قسط جديد"
                         val body = if (parsed.isPaymentConfirmation) {
                             "تم تحديث قسط ${parsed.provider} وسداد ${parsed.amount.toInt()} ج.م"

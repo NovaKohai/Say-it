@@ -34,7 +34,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -55,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sayit.core.localization.LocalStrings
+import com.example.sayit.presentation.common.FintechLoadingSpinner
 import com.example.sayit.presentation.dashboard.DashboardUiState
 import com.example.sayit.theme.CyanAccent
 import com.example.sayit.theme.Emerald500
@@ -72,7 +72,7 @@ fun SqlExplorerScreen(
     modifier: Modifier = Modifier
 ) {
     val strings = LocalStrings.current
-    val isEn = strings.currency == "EGP"
+    val isEn = !strings.isArabic
 
     var queryInput by remember {
         mutableStateOf("SELECT * FROM transactions ORDER BY timestamp DESC LIMIT 10")
@@ -411,10 +411,11 @@ fun SqlExplorerScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (uiState.isExecutingSql) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
+                            FintechLoadingSpinner(
+                                size = 20.dp,
+                                strokeWidth = 2.dp,
+                                primaryColor = Color.White,
+                                accentColor = Color.White.copy(alpha = 0.7f)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(if (isEn) "Executing..." else "جارٍ التنفيذ...")

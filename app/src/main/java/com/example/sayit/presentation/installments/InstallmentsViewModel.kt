@@ -1,5 +1,7 @@
 package com.example.sayit.presentation.installments
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,6 +28,8 @@ enum class InstallmentFilter(val labelAr: String, val labelEn: String) {
     COMPLETED("المسددة بالكامل", "Completed")
 }
 
+enum class InstallmentFeedback { ADDED, PAYMENT_RECORDED, DELETED }
+
 data class InstallmentsUiState(
     val installments: List<Installment> = emptyList(),
     val filteredInstallments: List<Installment> = emptyList(),
@@ -43,7 +47,7 @@ data class InstallmentsUiState(
     ),
     val activeFilter: InstallmentFilter = InstallmentFilter.ACTIVE,
     val isLoading: Boolean = false,
-    val feedbackMessage: String? = null
+    val feedbackMessage: InstallmentFeedback? = null
 )
 
 class InstallmentsViewModel(
@@ -54,8 +58,12 @@ class InstallmentsViewModel(
     private val deleteInstallmentUseCase: DeleteInstallmentUseCase
 ) : ViewModel() {
 
+    var isAddDialogOpen by androidx.compose.runtime.mutableStateOf(false)
+    var payingInstallment by androidx.compose.runtime.mutableStateOf<Installment?>(null)
+    var deletingInstallmentId by androidx.compose.runtime.mutableStateOf<String?>(null)
+
     private val _activeFilter = MutableStateFlow(InstallmentFilter.ACTIVE)
-    private val _feedbackMessage = MutableStateFlow<String?>(null)
+    private val _feedbackMessage = MutableStateFlow<InstallmentFeedback?>(null)
 
     val uiState: StateFlow<InstallmentsUiState> = combine(
         getInstallmentsUseCase(),
@@ -90,21 +98,21 @@ class InstallmentsViewModel(
     fun addInstallment(installment: Installment) {
         viewModelScope.launch {
             saveInstallmentUseCase(installment)
-            _feedbackMessage.value = "تمت إضافة خطة التقسيط بنجاح"
+            _feedbackMessage.value = InstallmentFeedback.ADDED
         }
     }
 
     fun recordPayment(installmentId: String, monthYear: String, paidAmount: Double) {
         viewModelScope.launch {
             recordInstallmentPaymentUseCase(installmentId, monthYear, paidAmount)
-            _feedbackMessage.value = "تم تسجيل الدفعة بنجاح"
+            _feedbackMessage.value = InstallmentFeedback.PAYMENT_RECORDED
         }
     }
 
     fun deleteInstallment(id: String) {
         viewModelScope.launch {
             deleteInstallmentUseCase(id)
-            _feedbackMessage.value = "تم حذف خطة التقسيط"
+            _feedbackMessage.value = InstallmentFeedback.DELETED
         }
     }
 
